@@ -1,0 +1,19 @@
+{
+  "name": "web-dev-project-server",
+  "version": "1.0.0",
+  "description": "Server for Chowk",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnithin/web-dev-project-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gnithin/web-dev-project-server/issues"
+  },
+  "homepage": "https://github.com/gnithin/web-dev-project-server#readme"
+}
