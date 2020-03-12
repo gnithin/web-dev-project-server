@@ -2,9 +2,10 @@
   "name": "web-dev-project-server",
   "version": "1.0.0",
   "description": "Server for Chowk",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "none",
+    "start-dev": "nodemon --config \"./nodemon.json\"/"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,17 @@
   "bugs": {
     "url": "https://github.com/gnithin/web-dev-project-server/issues"
   },
-  "homepage": "https://github.com/gnithin/web-dev-project-server#readme"
+  "homepage": "https://github.com/gnithin/web-dev-project-server#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/body-parser": "^1.19.0",
+    "@types/express": "^4.17.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
 }
