@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "test": "none",
-    "start-dev": "nodemon --config \"./nodemon.json\"/"
+    "start-dev": "nodemon --config \"./nodemon.json\"/",
+    "start": "tsc && node build/index.js"
   },
   "repository": {
     "type": "git",
