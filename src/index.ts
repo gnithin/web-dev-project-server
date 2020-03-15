@@ -5,12 +5,23 @@ import {UserController} from './controllers/userController';
 import 'reflect-metadata';
 import {createConnection} from 'typeorm';
 import {QuestionController} from './controllers/questionController';
+import * as cors from 'cors';
+
+const corsOptions = {
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
+    credentials: true,
+    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+    origin: '*',
+    preflightContinue: false,
+};
 
 class ChowkServer extends Server {
     constructor() {
         // super(process.env.NODE_ENV === 'development');
         super(false);
         this.app.use(bodyParser.json());
+        this.app.use(cors(corsOptions));
+
         super.addControllers(
             [
                 new UserController(),
