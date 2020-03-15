@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {Request, Response} from 'express';
 import * as bodyParser from 'body-parser';
-import ConfigConstants from 'constants/config'
+import ConfigConstants from './constants/config'
 
 const app = express();
 app.use(bodyParser.json());
