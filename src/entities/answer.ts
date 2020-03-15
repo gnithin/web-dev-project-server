@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Question} from './question';
 
 @Entity({name: 'answers'})
 export class Answer {
@@ -7,4 +8,7 @@ export class Answer {
 
     @Column({type: 'text'})
     answer: string;
+
+    @ManyToOne(type => Question, question => question.answers)
+    question: Question;
 }
