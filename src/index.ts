@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
 import {Server} from '@overnightjs/core';
 import {UserController} from './controllers/user_controller';
+import 'reflect-metadata';
 
 class ChowkServer extends Server {
     constructor() {
