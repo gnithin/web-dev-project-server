@@ -1,9 +1,10 @@
 import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
 import {Server} from '@overnightjs/core';
-import {UserController} from './controllers/user_controller';
+import {UserController} from './controllers/userController';
 import 'reflect-metadata';
 import {createConnection} from 'typeorm';
+import {QuestionController} from './controllers/questionController';
 
 class ChowkServer extends Server {
     constructor() {
@@ -13,7 +14,8 @@ class ChowkServer extends Server {
         super.addControllers(
             [
                 new UserController(),
-            ]
+                new QuestionController(),
+            ],
         );
     }
 
@@ -22,23 +24,26 @@ class ChowkServer extends Server {
     }
 }
 
-let port: number;
-const portStr: string | undefined = process.env.PORT_NUMBER;
-if (portStr !== undefined && !isNaN(Number(portStr))) {
-    port = Number(portStr);
-} else {
-    port = ConfigConstants.DEFAULT_PORT;
-}
+async function initializeServer() {
+    let port: number;
+    const portStr: string | undefined = process.env.PORT_NUMBER;
+    if (portStr !== undefined && !isNaN(Number(portStr))) {
+        port = Number(portStr);
+    } else {
+        port = ConfigConstants.DEFAULT_PORT;
+    }
 
-// Connect to db
+    // Connect to db
+    console.log('Creating a db-connection - ');
+    const connection = await createConnection();
 
-console.log('Creating a db-connection - ');
-createConnection().then((connection) => {
-    // Start server
+    // Start the server
     console.log('Starting server');
     console.log(`Listening to port ${port}...`);
     new ChowkServer().start(port);
-}).catch(err => {
-    console.error(`Error creating a db-connection - ${err}`)
+}
+
+initializeServer().catch(e => {
+    console.error(`Error initializing server - ${e}`)
 });
 
