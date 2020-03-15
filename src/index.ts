@@ -2,6 +2,8 @@ import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
 import {Server} from '@overnightjs/core';
 import {UserController} from './controllers/user_controller';
+import 'reflect-metadata';
+import {createConnection} from 'typeorm';
 
 class ChowkServer extends Server {
     constructor() {
@@ -28,6 +30,15 @@ if (portStr !== undefined && !isNaN(Number(portStr))) {
     port = ConfigConstants.DEFAULT_PORT;
 }
 
-console.log('Starting server');
-console.log(`Listening to port ${port}...`);
-new ChowkServer().start(port);
+// Connect to db
+
+console.log('Creating a db-connection - ');
+createConnection().then((connection) => {
+    // Start server
+    console.log('Starting server');
+    console.log(`Listening to port ${port}...`);
+    new ChowkServer().start(port);
+}).catch(err => {
+    console.error(`Error creating a db-connection - ${err}`)
+});
+
