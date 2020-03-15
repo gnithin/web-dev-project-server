@@ -1,5 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Answer} from './answer';
+import {User} from './user';
 
 @Entity({name: 'questions'})
 export class Question {
@@ -10,5 +11,8 @@ export class Question {
     question: string;
 
     @OneToMany(type => Answer, answer => answer.id)
-    answers: Answer[]
+    answers: Answer[];
+
+    @ManyToOne(type => User, user => user.id)
+    user: User;
 }
