@@ -1,18 +1,24 @@
-import * as express from 'express';
-import {Request, Response} from 'express';
 import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
+import {Server} from '@overnightjs/core';
+import {UserController} from './controllers/user_controller';
 
-const app = express();
-app.use(bodyParser.json());
+class ChowkServer extends Server {
+    constructor() {
+        // super(process.env.NODE_ENV === 'development');
+        super(false);
+        this.app.use(bodyParser.json());
+        super.addControllers(
+            [
+                new UserController(),
+            ]
+        );
+    }
 
-// routes
-
-app.get('/hi', (req: Request, response: Response) => {
-    response.status(200).json({
-        'hi': 'hi',
-    })
-});
+    public start(portNumber: number) {
+        this.app.listen(portNumber);
+    }
+}
 
 let port: number;
 const portStr: string | undefined = process.env.PORT_NUMBER;
@@ -24,4 +30,4 @@ if (portStr !== undefined && !isNaN(Number(portStr))) {
 
 console.log('Starting server');
 console.log(`Listening to port ${port}...`);
-app.listen(port);
+new ChowkServer().start(port);
