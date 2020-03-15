@@ -6,6 +6,7 @@
   "scripts": {
     "test": "none",
     "start-dev": "nodemon --config \"./nodemon.json\"/",
+    "build": "tsc",
     "start": "tsc && node build/index.js"
   },
   "repository": {
