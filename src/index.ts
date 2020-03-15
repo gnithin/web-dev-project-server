@@ -4,6 +4,7 @@ import {Server} from '@overnightjs/core';
 import {UserController} from './controllers/userController';
 import 'reflect-metadata';
 import {createConnection} from 'typeorm';
+import {QuestionController} from './controllers/questionController';
 
 class ChowkServer extends Server {
     constructor() {
@@ -13,6 +14,7 @@ class ChowkServer extends Server {
         super.addControllers(
             [
                 new UserController(),
+                new QuestionController(),
             ]
         );
     }
