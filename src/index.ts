@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
 import {Server} from '@overnightjs/core';
-import {UserController} from './controllers/user_controller';
+import {UserController} from './controllers/userController';
 import 'reflect-metadata';
 import {createConnection} from 'typeorm';
 
