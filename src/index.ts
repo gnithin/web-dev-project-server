@@ -15,7 +15,7 @@ class ChowkServer extends Server {
             [
                 new UserController(),
                 new QuestionController(),
-            ]
+            ],
         );
     }
 
