@@ -10,7 +10,9 @@ export class QuestionService {
     }
 
     public async getAllQuestions(): Promise<Question[]> {
-        return await this.questionRepository.find();
+        return await this.questionRepository.find({
+            relations: ["user"]
+        });
     }
 
     public async createNewQuestion(question: Question): Promise<Question> {
