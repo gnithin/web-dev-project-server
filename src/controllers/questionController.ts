@@ -1,8 +1,8 @@
-import {Controller, Get, Post} from '@overnightjs/core';
-import {Request, Response} from 'express';
-import {QuestionService} from '../services/questionService';
-import {Question} from '../entities/question';
-import {ResponseHandler} from '../common/ResponseHandler';
+import { Controller, Get, Post, Put } from '@overnightjs/core';
+import { Request, Response, request } from 'express';
+import { QuestionService } from '../services/questionService';
+import { Question } from '../entities/question';
+import { ResponseHandler } from '../common/ResponseHandler';
 
 @Controller('api/questions')
 export class QuestionController {
@@ -31,4 +31,16 @@ export class QuestionController {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
     }
+
+    @Put()
+    private async updateQuestion(req: Request, resp: Response) {
+        try {
+            console.log(req, resp)
+            const updatedQuestion = await this.service.updateQuestion(req.body as Question);
+            ResponseHandler.sendSuccessJson(resp, updatedQuestion);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
 }

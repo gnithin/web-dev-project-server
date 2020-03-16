@@ -17,4 +17,9 @@ export class QuestionService {
         console.log('Question - ', question);
         return this.questionRepository.save(question);
     }
+
+    public async updateQuestion(question: Question): Promise<Question> {
+        console.log('Updating - ', question);
+        return this.questionRepository.save(question);
+    }
 }
