@@ -10,6 +10,16 @@
   $ npm install
   ```
 - Lookup the `package.json` file for all the dependencies.
+- Add a `.env` or `.dev.env` file at the project root.
+- It will have the following entries, depending on what is to be connected - 
+  ```
+  DB_TYPE=mysql
+  DB_HOST=localhost
+  DB_PORT=3306
+  DB_USERNAME=<YOUR_DB_USERNAME>
+  DB_PASSWORD=<YOUR_DB_PASSWORD>
+  DB_SCHEMA=<YOUR_DB_NAME>
+  ```
 
 ## Running dev environment
 - Run - 
