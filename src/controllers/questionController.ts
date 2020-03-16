@@ -12,7 +12,7 @@ export class QuestionController {
         this.service = new QuestionService();
     }
 
-    @Get('all')
+    @Get()
     private async getAllQuestions(req: Request, resp: Response) {
         try {
             const questions: Question[] = await this.service.getAllQuestions();
@@ -22,7 +22,7 @@ export class QuestionController {
         }
     }
 
-    @Post('new')
+    @Post()
     private async createNewQuestion(req: Request, resp: Response) {
         try {
             const newQuestion = await this.service.createNewQuestion((req.body as Question));
