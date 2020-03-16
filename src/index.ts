@@ -1,10 +1,10 @@
 import * as bodyParser from 'body-parser';
 import ConfigConstants from './constants/config'
-import {Server} from '@overnightjs/core';
-import {UserController} from './controllers/userController';
+import { Server } from '@overnightjs/core';
+import { UserController } from './controllers/userController';
 import 'reflect-metadata';
-import {createConnection} from 'typeorm';
-import {QuestionController} from './controllers/questionController';
+import { createConnection } from 'typeorm';
+import { QuestionController } from './controllers/questionController';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 
