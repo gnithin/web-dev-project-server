@@ -35,7 +35,7 @@ export class QuestionService {
         return this.questionRepository.save(question);
     }
 
-    public async deleteQuestion(questionId: number): Promise<Number> {
+    public async deleteQuestion(questionId: number): Promise<number> {
         console.log('Deleting - ', questionId);
         const res = await this.questionRepository.delete(questionId);
         return Number(res.affected);

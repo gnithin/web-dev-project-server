@@ -54,7 +54,7 @@ export class QuestionController {
     @Delete(':questionId')
     private async deleteQuestion(req: Request, resp: Response) {
         try {
-            const serviceResponse = await this.service.deleteQuestion(Number(req.params.questionId));
+            const serviceResponse = await this.service.deleteQuestion(parseInt(req.params.questionId));
             ResponseHandler.sendSuccessJson(resp, serviceResponse);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
