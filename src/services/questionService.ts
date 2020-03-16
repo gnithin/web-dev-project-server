@@ -10,9 +10,14 @@ export class QuestionService {
     }
 
     public async getAllQuestions(): Promise<Question[]> {
-        return await this.questionRepository.find({
-            relations: ["user"]
-        });
+        try {
+            return await this.questionRepository.find({
+                relations: ["user"]
+            });
+        } catch (e) {
+            console.error(e);
+            throw (e);
+        }
     }
 
     public async getQuestionById(qId: number): Promise<Question | undefined> {
@@ -22,23 +27,39 @@ export class QuestionService {
             });
         } catch (e) {
             console.error(e);
+            throw (e);
         }
 
     }
 
     public async createNewQuestion(question: Question): Promise<Question> {
         console.log('Question - ', question);
-        return this.questionRepository.save(question);
+        try {
+            return this.questionRepository.save(question);
+        } catch (e) {
+            console.error(e);
+            throw (e);
+        }
     }
 
     public async updateQuestion(question: Question): Promise<Question> {
         console.log('Updating - ', question);
-        return this.questionRepository.save(question);
+        try {
+            return this.questionRepository.save(question);
+        } catch (e) {
+            console.error(e);
+            throw (e);
+        }
     }
 
     public async deleteQuestion(questionId: number): Promise<number> {
         console.log('Deleting - ', questionId);
-        const res = await this.questionRepository.delete(questionId);
-        return Number(res.affected);
+        try {
+            const res = await this.questionRepository.delete(questionId);
+            return Number(res.affected);
+        } catch (e) {
+            console.error(e);
+            throw (e);
+        }
     }
 }
