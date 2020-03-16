@@ -6,7 +6,15 @@ import 'reflect-metadata';
 import {createConnection} from 'typeorm';
 import {QuestionController} from './controllers/questionController';
 import * as cors from 'cors';
+import * as dotenv from 'dotenv';
 
+// config
+dotenv.config();
+if (process.env.NODE_ENV === 'development') {
+    dotenv.config({path: './.dev.env'});
+}
+
+// Setup controllers
 const corsOptions = {
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
     credentials: true,

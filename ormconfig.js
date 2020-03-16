@@ -17,14 +17,14 @@ if (process.env.NODE_ENV === "development") {
     ];
 }
 
-// TODO: Fetch the details from env vars
+// Fetch the details from env vars
 module.exports = {
-    "type": "mysql",
-    "host": "localhost",
-    "port": 3306,
-    "username": "chowkuser",
-    "password": "chowk",
-    "database": "chowk",
+    "type": process.env.DB_TYPE,
+    "host": process.env.DB_HOST,
+    "port": process.env.DB_PORT,
+    "username": process.env.DB_USERNAME,
+    "password": process.env.DB_PASSWORD,
+    "database": process.env.DB_SCHEMA,
     "synchronize": true,
     "logging": false,
     "entities": entities,
