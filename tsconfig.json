@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "outDir": "build",
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "target": "es2017",
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es6"
+    ]
+  },
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "./src/public/"
+  ]
+}
