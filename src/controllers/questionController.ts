@@ -22,6 +22,16 @@ export class QuestionController {
         }
     }
 
+    @Get(':questionId')
+    private async getQuestionById(req: Request, resp: Response) {
+        try {
+            let question = await this.service.getQuestionById(parseInt(req.params.questionId));
+            ResponseHandler.sendSuccessJson(resp, question);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
     @Post()
     private async createNewQuestion(req: Request, resp: Response) {
         try {
