@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Put, Delete } from '@overnightjs/core';
-import { Request, Response, request } from 'express';
-import { QuestionService } from '../services/questionService';
-import { Question } from '../entities/question';
+import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
+import { Request, Response } from 'express';
 import { ResponseHandler } from '../common/ResponseHandler';
+import { Question } from '../entities/question';
+import { QuestionService } from '../services/questionService';
 
 @Controller('api/questions')
 export class QuestionController {
@@ -51,6 +51,7 @@ export class QuestionController {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
     }
+
     @Delete(':questionId')
     private async deleteQuestion(req: Request, resp: Response) {
         try {

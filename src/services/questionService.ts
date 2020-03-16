@@ -1,7 +1,6 @@
-import { Question } from '../entities/question';
 import { getConnection } from 'typeorm';
+import { Question } from '../entities/question';
 import { QuestionRepository } from '../repositories/questionRepository';
-import { response } from 'express';
 
 export class QuestionService {
     questionRepository: QuestionRepository;
@@ -21,10 +20,10 @@ export class QuestionService {
             return await this.questionRepository.findOneOrFail(qId, {
                 relations: ["user"]
             });
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         }
-        
+
     }
 
     public async createNewQuestion(question: Question): Promise<Question> {
