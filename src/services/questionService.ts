@@ -1,6 +1,6 @@
-import {Question} from '../entities/question';
-import {getConnection} from 'typeorm';
-import {QuestionRepository} from '../repositories/questionRepository';
+import { Question } from '../entities/question';
+import { getConnection } from 'typeorm';
+import { QuestionRepository } from '../repositories/questionRepository';
 
 export class QuestionService {
     questionRepository: QuestionRepository;
@@ -21,5 +21,11 @@ export class QuestionService {
     public async updateQuestion(question: Question): Promise<Question> {
         console.log('Updating - ', question);
         return this.questionRepository.save(question);
+    }
+
+    public async deleteQuestion(questionId: number): Promise<Number> {
+        console.log('Deleting - ', questionId);
+        const res = await this.questionRepository.delete(questionId);
+        return Number(res.affected);
     }
 }
