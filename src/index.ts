@@ -46,6 +46,8 @@ async function initializeServer() {
 
     // Connect to db
     console.log('Creating a db-connection - ');
+
+    // Create a connection
     const connection = await createConnection();
 
     // Start the server
