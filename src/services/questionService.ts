@@ -18,7 +18,9 @@ export class QuestionService {
 
     public async getQuestionById(qId: number): Promise<Question | undefined> {
         try {
-            return await this.questionRepository.findOneOrFail(qId);
+            return await this.questionRepository.findOneOrFail(qId, {
+                relations: ["user"]
+            });
         } catch(e) {
             console.error(e);
         }
