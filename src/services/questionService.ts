@@ -12,7 +12,7 @@ export class QuestionService {
     public async getAllQuestions(): Promise<Question[]> {
         try {
             return await this.questionRepository.find({
-                relations: ["user"]
+                relations: ['user']
             });
         } catch (e) {
             console.error(e);
@@ -23,7 +23,7 @@ export class QuestionService {
     public async getQuestionById(qId: number): Promise<Question | undefined> {
         try {
             return await this.questionRepository.findOneOrFail(qId, {
-                relations: ["user"]
+                relations: ['user']
             });
         } catch (e) {
             console.error(e);

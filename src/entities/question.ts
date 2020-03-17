@@ -20,7 +20,7 @@ export class Question {
     answers: Answer[];
 
     @ManyToOne(type => User, user => user.id, {
-        onDelete: "CASCADE"
+        onDelete: 'CASCADE'
     })
     user: User;
 }

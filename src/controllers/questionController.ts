@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@overnightjs/core';
+import { Controller, Get, Post, Put, Delete } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { QuestionService } from '../services/questionService';
 import { Question } from '../entities/question';
@@ -25,7 +25,8 @@ export class QuestionController {
     @Get(':questionId')
     private async getQuestionById(req: Request, resp: Response) {
         try {
-            let question = await this.service.getQuestionById(parseInt(req.params.questionId));
+            const question = await this.service
+                .getQuestionById(parseInt(req.params.questionId, 10));
             ResponseHandler.sendSuccessJson(resp, question);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -55,7 +56,8 @@ export class QuestionController {
     @Delete(':questionId')
     private async deleteQuestion(req: Request, resp: Response) {
         try {
-            const serviceResponse = await this.service.deleteQuestion(parseInt(req.params.questionId));
+            const serviceResponse = await this.service
+                .deleteQuestion(parseInt(req.params.questionId, 10));
             ResponseHandler.sendSuccessJson(resp, serviceResponse);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
