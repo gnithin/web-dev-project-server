@@ -27,7 +27,7 @@ export class QuestionController {
         try {
             const qId = parseInt(req.params.questionId, 10);
             if (isNaN(qId)) {
-                throw new Error('Invalid question ID');
+                throw new Error('Invalid question ID. Expecting a number.');
             }
             const question = await this.service
                 .getQuestionById(qId);
@@ -62,11 +62,11 @@ export class QuestionController {
         try {
             const qId = parseInt(req.params.questionId, 10);
             if (isNaN(qId)) {
-                throw new Error('Invalid question ID');
+                throw new Error('Invalid question ID. Expecting a number.');
             }
             const serviceResponse = await this.service
                 .deleteQuestion(qId);
-            ResponseHandler.sendSuccessJson(resp, serviceResponse);
+            ResponseHandler.sendSuccessJson(resp, { affected: serviceResponse });
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
