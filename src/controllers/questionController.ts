@@ -1,8 +1,8 @@
-import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
+import { Controller, Get, Post } from '@overnightjs/core';
 import { Request, Response } from 'express';
-import { ResponseHandler } from '../common/ResponseHandler';
-import { Question } from '../entities/question';
 import { QuestionService } from '../services/questionService';
+import { Question } from '../entities/question';
+import { ResponseHandler } from '../common/ResponseHandler';
 
 @Controller('api/questions')
 export class QuestionController {

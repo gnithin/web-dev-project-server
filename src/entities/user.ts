@@ -1,6 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Question} from './question';
-import {Answer} from './answer';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Question } from './question';
+import { Answer } from './answer';
 
 @Entity({name: 'users'})
 export class User {
