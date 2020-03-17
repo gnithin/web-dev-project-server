@@ -8,7 +8,7 @@ export class Question {
     id: number;
 
     @Column({ type: 'text' })
-    question: string;
+    title: string;
 
     @Column({
         type: 'longtext',
