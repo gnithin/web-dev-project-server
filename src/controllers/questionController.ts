@@ -25,8 +25,12 @@ export class QuestionController {
     @Get(':questionId')
     private async getQuestionById(req: Request, resp: Response) {
         try {
+            const qId = parseInt(req.params.questionId, 10);
+            if (isNaN(qId)) {
+                throw new Error('Invalid question ID');
+            }
             const question = await this.service
-                .getQuestionById(parseInt(req.params.questionId, 10));
+                .getQuestionById(qId);
             ResponseHandler.sendSuccessJson(resp, question);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -56,8 +60,12 @@ export class QuestionController {
     @Delete(':questionId')
     private async deleteQuestion(req: Request, resp: Response) {
         try {
+            const qId = parseInt(req.params.questionId, 10);
+            if (isNaN(qId)) {
+                throw new Error('Invalid question ID');
+            }
             const serviceResponse = await this.service
-                .deleteQuestion(parseInt(req.params.questionId, 10));
+                .deleteQuestion(qId);
             ResponseHandler.sendSuccessJson(resp, serviceResponse);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
