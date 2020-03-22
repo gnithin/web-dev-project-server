@@ -29,8 +29,7 @@ export class QuestionController {
             if (isNaN(qId)) {
                 throw new Error('Invalid question ID. Expecting a number.');
             }
-            const question = await this.service
-                .getQuestionById(qId);
+            const question: Question = await this.service.getQuestionById(qId);
             ResponseHandler.sendSuccessJson(resp, question);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
