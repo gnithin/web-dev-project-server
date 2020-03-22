@@ -7,7 +7,8 @@
     "test": "none",
     "dev": "nodemon --config \"./nodemon.json\"/",
     "build": "tsc",
-    "start-prod": "tsc && node build/index.js"
+    "tsc": "tsc",
+    "start-prod": "npm run tsc && node build/index.js"
   },
   "repository": {
     "type": "git",
