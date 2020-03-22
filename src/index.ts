@@ -7,6 +7,7 @@ import { createConnection } from 'typeorm';
 import { QuestionController } from './controllers/questionController';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
+import { AnswerController } from './controllers/answerController';
 
 // Load the config
 // NOTE: dotenv does not allow overriding env vars, so loading only one of the configs.
@@ -37,6 +38,7 @@ class ChowkServer extends Server {
             [
                 new UserController(),
                 new QuestionController(),
+                new AnswerController(),
             ],
         );
     }

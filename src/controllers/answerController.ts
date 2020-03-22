@@ -5,10 +5,11 @@ import { Answer } from '../entities/answer';
 import { AnswerService } from '../services/answerService';
 
 @Controller('api/answers')
-class AnswerController {
+export class AnswerController {
     private service: AnswerService;
 
     constructor() {
+        console.log('Started answer controller');
         this.service = AnswerService.getInstance();
     }
 
