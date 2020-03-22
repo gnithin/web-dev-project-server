@@ -29,10 +29,15 @@ export class QuestionService {
         }
     }
 
-    public async getQuestionById(qId: number): Promise<Question> {
+    public async getQuestionById(qId: number, includeAnswers: boolean = true): Promise<Question> {
+        let relations: Array<string> = ['user'];
+        if (includeAnswers) {
+            relations.push('answers')
+        }
+
         try {
             return await this.questionRepository.findOneOrFail(qId, {
-                relations: ['user', 'answers']
+                relations: relations
             });
         } catch (e) {
             console.error(e);

@@ -22,7 +22,7 @@ export class AnswerService {
     }
 
     public async createAnswerForQuestion(answer: Answer, qid: number): Promise<Answer> {
-        answer.question = await this.questionService.getQuestionById(qid);
+        answer.question = await this.questionService.getQuestionById(qid, false);
         return await this.answerRepository.save(answer);
     }
 
