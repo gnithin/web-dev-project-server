@@ -9,7 +9,7 @@ export class QuestionController {
     private service: QuestionService;
 
     constructor() {
-        this.service = new QuestionService();
+        this.service = QuestionService.getInstance();
     }
 
     @Get()

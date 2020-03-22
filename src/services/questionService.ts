@@ -3,11 +3,20 @@ import { getConnection } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
 
 export class QuestionService {
-    questionRepository: QuestionRepository;
+    private static instance: QuestionService;
+    private questionRepository: QuestionRepository;
 
-    constructor() {
+    private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
     }
+
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new QuestionService();
+        }
+        return this.instance;
+    }
+
 
     public async getAllQuestions(): Promise<Question[]> {
         try {
