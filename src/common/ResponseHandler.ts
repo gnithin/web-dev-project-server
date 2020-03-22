@@ -1,5 +1,5 @@
-import {Response} from 'express';
-import {ResponseFormatter} from './ResponseFormatter';
+import { Response } from 'express';
+import { ResponseFormatter } from './ResponseFormatter';
 
 export class ResponseHandler {
     public static sendSuccessJson(resp: Response, data: any) {
