@@ -9,7 +9,6 @@ export class AnswerController {
     private service: AnswerService;
 
     constructor() {
-        console.log('Started answer controller');
         this.service = AnswerService.getInstance();
     }
 
