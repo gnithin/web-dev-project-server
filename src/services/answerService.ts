@@ -27,9 +27,8 @@ export class AnswerService {
     }
 
     public async updateAnswerForId(aid: number, updatedAnswer: Answer): Promise<Answer> {
-        let answer = await this.answerRepository.findOneOrFail(aid);
-        updatedAnswer.user = answer.user;
-        updatedAnswer.id = answer.id;
+        await this.answerRepository.findOneOrFail(aid);
+        updatedAnswer.id = aid;
         return await this.answerRepository.save(updatedAnswer);
     }
 
