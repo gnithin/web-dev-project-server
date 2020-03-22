@@ -20,9 +20,6 @@
     "url": "https://github.com/gnithin/web-dev-project-server/issues"
   },
   "homepage": "https://github.com/gnithin/web-dev-project-server#readme",
-  "devDependencies": {
-    "nodemon": "^2.0.2"
-  },
   "dependencies": {
     "@overnightjs/core": "^1.6.15",
     "@types/body-parser": "^1.19.0",
@@ -39,6 +36,7 @@
     "typeorm": "^0.2.24",
     "ts-node": "^8.6.2",
     "tslint": "^6.1.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "nodemon": "^2.0.2"
   }
 }
