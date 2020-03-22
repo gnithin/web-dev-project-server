@@ -6,8 +6,9 @@
   "scripts": {
     "test": "none",
     "dev": "nodemon --config \"./nodemon.json\"/",
-    "build": "tsc",
-    "start-prod": "tsc && node build/index.js"
+    "tsc": "node_modules/typescript/bin/tsc",
+    "build": "npm run tsc",
+    "start-prod": "npm run build && node build/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,12 +20,6 @@
     "url": "https://github.com/gnithin/web-dev-project-server/issues"
   },
   "homepage": "https://github.com/gnithin/web-dev-project-server#readme",
-  "devDependencies": {
-    "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2",
-    "tslint": "^6.1.0",
-    "typescript": "^3.8.3"
-  },
   "dependencies": {
     "@overnightjs/core": "^1.6.15",
     "@types/body-parser": "^1.19.0",
@@ -38,6 +33,10 @@
     "express": "^4.17.1",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.24"
+    "typeorm": "^0.2.24",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3",
+    "nodemon": "^2.0.2"
   }
 }

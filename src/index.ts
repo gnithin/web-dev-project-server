@@ -45,7 +45,7 @@ class ChowkServer extends Server {
 
 async function initializeServer() {
     let port: number;
-    const portStr: string | undefined = process.env.PORT_NUMBER;
+    const portStr: string | undefined = process.env.PORT;
     if (portStr !== undefined && !isNaN(Number(portStr))) {
         port = Number(portStr);
     } else {
