@@ -36,6 +36,9 @@
   ```
 - This should create a build directory, with the transpiled js files.
 
+## API References -
+All the APIs are described [here](https://documenter.getpostman.com/view/6351305/SzS8s5P6?version=latest)
+
 ## Resources - 
 - Writing Typescript with express -
     - https://typeorm.io/#/example-with-express
