@@ -16,7 +16,7 @@ export class Question {
     })
     description: string;
 
-    @OneToMany(type => Answer, answer => answer.id)
+    @OneToMany(type => Answer, answer => answer.question)
     answers: Answer[];
 
     @ManyToOne(type => User, user => user.id, {

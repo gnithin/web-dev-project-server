@@ -32,7 +32,7 @@ export class QuestionService {
     public async getQuestionById(qId: number): Promise<Question> {
         try {
             return await this.questionRepository.findOneOrFail(qId, {
-                relations: ['user']
+                relations: ['user', 'answers']
             });
         } catch (e) {
             console.error(e);
