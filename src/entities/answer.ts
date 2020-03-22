@@ -15,6 +15,6 @@ export class Answer {
     })
     question: Question;
 
-    @ManyToOne(type => User, user => user.id)
+    @ManyToOne(type => User, user => user.answers)
     user: User
 }
