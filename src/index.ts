@@ -8,10 +8,13 @@ import { QuestionController } from './controllers/questionController';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 
-// config
-dotenv.config();
+// Load the config
+// NOTE: dotenv does not allow overriding env vars, so loading only one of the configs.
+// Related - https://github.com/motdotla/dotenv/pull/370
 if (process.env.NODE_ENV === 'development') {
     dotenv.config({path: './.dev.env'});
+} else {
+    dotenv.config();
 }
 
 // Setup controllers
