@@ -7,7 +7,7 @@ export class Answer {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type: 'text'})
+    @Column({type: 'longtext'})
     answer: string;
 
     @ManyToOne(type => Question, question => question.answers, {
