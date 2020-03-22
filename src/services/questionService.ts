@@ -42,9 +42,13 @@ export class QuestionService {
         }
     }
 
-    public async updateQuestion(question: Question): Promise<Question> {
-        console.log('Updating - ', question);
+    public async updateQuestion(qId: number, question: Question): Promise<Question> {
+        console.log('Updating - ', qId);
         try {
+            if(await this.questionRepository.findOne(qId) === undefined) {
+                throw new Error('Entity does not exist');
+            }
+            question.id = qId;
             return this.questionRepository.save(question);
         } catch (e) {
             console.error(e);
