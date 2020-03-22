@@ -35,7 +35,7 @@ export class QuestionService {
     public async createNewQuestion(question: Question): Promise<Question> {
         console.log('Question - ', question);
         try {
-            return this.questionRepository.save(question);
+            return await this.questionRepository.save(question);
         } catch (e) {
             console.error(e);
             throw (e);
@@ -45,7 +45,7 @@ export class QuestionService {
     public async updateQuestion(question: Question): Promise<Question> {
         console.log('Updating - ', question);
         try {
-            return this.questionRepository.save(question);
+            return await this.questionRepository.save(question);
         } catch (e) {
             console.error(e);
             throw (e);
