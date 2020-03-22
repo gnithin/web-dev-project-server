@@ -47,10 +47,14 @@ export class QuestionController {
         }
     }
 
-    @Put()
+    @Put(':questionId')
     private async updateQuestion(req: Request, resp: Response) {
         try {
-            const updatedQuestion = await this.service.updateQuestion(req.body as Question);
+            const qId = parseInt(req.params.questionId, 10);
+            if (isNaN(qId)) {
+                throw new Error('Invalid question ID. Expecting a number.');
+            }
+            const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question);
             ResponseHandler.sendSuccessJson(resp, updatedQuestion);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
