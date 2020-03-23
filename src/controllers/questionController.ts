@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete } from '@overnightjs/core';
+import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { QuestionService } from '../services/questionService';
 import { Question } from '../entities/question';
@@ -6,10 +6,10 @@ import { ResponseHandler } from '../common/ResponseHandler';
 
 @Controller('api/questions')
 export class QuestionController {
-    service: QuestionService;
+    private service: QuestionService;
 
     constructor() {
-        this.service = new QuestionService();
+        this.service = QuestionService.getInstance();
     }
 
     @Get()
@@ -29,8 +29,7 @@ export class QuestionController {
             if (isNaN(qId)) {
                 throw new Error('Invalid question ID. Expecting a number.');
             }
-            const question = await this.service
-                .getQuestionById(qId);
+            const question: Question = await this.service.getQuestionById(qId);
             ResponseHandler.sendSuccessJson(resp, question);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -47,10 +46,14 @@ export class QuestionController {
         }
     }
 
-    @Put()
+    @Put(':questionId')
     private async updateQuestion(req: Request, resp: Response) {
         try {
-            const updatedQuestion = await this.service.updateQuestion(req.body as Question);
+            const qId = parseInt(req.params.questionId, 10);
+            if (isNaN(qId)) {
+                throw new Error('Invalid question ID. Expecting a number.');
+            }
+            const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question);
             ResponseHandler.sendSuccessJson(resp, updatedQuestion);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);

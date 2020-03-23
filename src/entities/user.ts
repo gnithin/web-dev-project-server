@@ -10,9 +10,9 @@ export class User {
     @Column()
     name: string;
 
-    @OneToMany(type => Question, question => question.id)
+    @OneToMany(type => Question, question => question.user)
     questions: Question[];
 
-    @OneToMany(type => Answer, answer => answer.id)
+    @OneToMany(type => Answer, answer => answer.user)
     answers: Answer[];
 }
