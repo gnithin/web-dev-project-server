@@ -1,0 +1,6 @@
+enum ERROR_CODES {
+    GENERAL =1,
+    REQUEST_VALIDATION_ERR,
+}
+
+export default ERROR_CODES;

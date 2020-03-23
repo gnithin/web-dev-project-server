@@ -6,6 +6,7 @@ import { AnswerService } from '../services/answerService';
 import { Question } from '../entities/question';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import ERROR_CODES from '../constants/errorCodes';
 
 @Controller('api/answers')
 export class AnswerController {
@@ -22,7 +23,7 @@ export class AnswerController {
             ResponseHandler.sendErrorJson(
                 resp,
                 'Invalid question id',
-                400,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
             return;
@@ -30,7 +31,12 @@ export class AnswerController {
 
         const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
         await validateOrReject(reqAnswer).catch(errors => {
-            ResponseHandler.sendErrorJson(resp, errors, 400, 400);
+            ResponseHandler.sendErrorJson(
+                resp,
+                errors,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
         });
 
         try {
@@ -49,7 +55,7 @@ export class AnswerController {
             ResponseHandler.sendErrorJson(
                 resp,
                 'Invalid answer id',
-                400,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
             return;
@@ -57,7 +63,11 @@ export class AnswerController {
 
         const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
         await validateOrReject(reqAnswer).catch(errors => {
-            ResponseHandler.sendErrorJson(resp, errors, 400, 400);
+            ResponseHandler.sendErrorJson(
+                resp,
+                errors,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400);
         });
 
         try {

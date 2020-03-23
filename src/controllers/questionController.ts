@@ -5,6 +5,7 @@ import { Question } from '../entities/question';
 import { ResponseHandler } from '../common/ResponseHandler';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import ERROR_CODES from '../constants/errorCodes';
 
 @Controller('api/questions')
 export class QuestionController {
@@ -42,7 +43,12 @@ export class QuestionController {
     private async createNewQuestion(req: Request, resp: Response) {
         const question: Question = plainToClass(Question, req.body as Question);
         await validateOrReject(question).catch(errors => {
-            ResponseHandler.sendErrorJson(resp, errors, 400, 400);
+            ResponseHandler.sendErrorJson(
+                resp,
+                errors,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
         });
 
         try {
@@ -60,7 +66,7 @@ export class QuestionController {
         if (isNaN(qId)) {
             ResponseHandler.sendErrorJson(resp,
                 'Invalid question ID. Expecting a number.',
-                400,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
             return;
@@ -68,7 +74,12 @@ export class QuestionController {
 
         const question: Question = plainToClass(Question, req.body as Question);
         await validateOrReject(question).catch(errors => {
-            ResponseHandler.sendErrorJson(resp, errors, 400, 400);
+            ResponseHandler.sendErrorJson(
+                resp,
+                errors,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
         });
 
         try {
