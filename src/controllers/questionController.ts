@@ -42,14 +42,17 @@ export class QuestionController {
     @Post()
     private async createNewQuestion(req: Request, resp: Response) {
         const question: Question = plainToClass(Question, req.body as Question);
-        await validateOrReject(question).catch(errors => {
+        try{
+            await validateOrReject(question)
+        }catch(e){
             ResponseHandler.sendErrorJson(
                 resp,
-                errors,
+                e,
                 ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
-        });
+            return;
+        }
 
         try {
             const newQuestion = await this.service.createNewQuestion(question);
@@ -73,14 +76,17 @@ export class QuestionController {
         }
 
         const question: Question = plainToClass(Question, req.body as Question);
-        await validateOrReject(question).catch(errors => {
+        try{
+            await validateOrReject(question)
+        }catch(e) {
             ResponseHandler.sendErrorJson(
                 resp,
-                errors,
+                e,
                 ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
-        });
+            return;
+        }
 
         try {
             const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question);

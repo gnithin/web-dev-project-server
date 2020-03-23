@@ -30,14 +30,17 @@ export class AnswerController {
         }
 
         const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
-        await validateOrReject(reqAnswer).catch(errors => {
+        try{
+            await validateOrReject(reqAnswer)
+        }catch(e) {
             ResponseHandler.sendErrorJson(
                 resp,
-                errors,
+                e,
                 ERROR_CODES.REQUEST_VALIDATION_ERR,
                 400
             );
-        });
+            return;
+        }
 
         try {
             const answer: Answer = await this.service.createAnswerForQuestion(reqAnswer, qid);
@@ -62,13 +65,17 @@ export class AnswerController {
         }
 
         const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
-        await validateOrReject(reqAnswer).catch(errors => {
+        try{
+            await validateOrReject(reqAnswer)
+        } catch(e) {
             ResponseHandler.sendErrorJson(
                 resp,
-                errors,
+                e,
                 ERROR_CODES.REQUEST_VALIDATION_ERR,
-                400);
-        });
+                400
+            );
+            return;
+        }
 
         try {
             const answer: Answer = await this.service.updateAnswerForId(aid, reqAnswer)
