@@ -1,12 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from './question';
 import { User } from './user';
+import { IsNotEmpty } from 'class-validator';
 
 @Entity({name: 'answers'})
 export class Answer {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @IsNotEmpty()
     @Column({type: 'longtext'})
     answer: string;
 

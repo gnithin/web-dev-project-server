@@ -3,6 +3,9 @@ import { Request, Response } from 'express';
 import { QuestionService } from '../services/questionService';
 import { Question } from '../entities/question';
 import { ResponseHandler } from '../common/ResponseHandler';
+import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
+import ERROR_CODES from '../constants/errorCodes';
 
 @Controller('api/questions')
 export class QuestionController {
@@ -38,21 +41,54 @@ export class QuestionController {
 
     @Post()
     private async createNewQuestion(req: Request, resp: Response) {
+        const question: Question = plainToClass(Question, req.body as Question);
+        try{
+            await validateOrReject(question)
+        }catch(e){
+            ResponseHandler.sendErrorJson(
+                resp,
+                e,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+
         try {
-            const newQuestion = await this.service.createNewQuestion((req.body as Question));
+            const newQuestion = await this.service.createNewQuestion(question);
             ResponseHandler.sendSuccessJson(resp, newQuestion);
         } catch (e) {
-            ResponseHandler.sendErrorJson(resp, e.message);
+            console.error(e);
+            ResponseHandler.sendErrorJson(resp, e);
         }
     }
 
     @Put(':questionId')
     private async updateQuestion(req: Request, resp: Response) {
+        const qId = parseInt(req.params.questionId, 10);
+        if (isNaN(qId)) {
+            ResponseHandler.sendErrorJson(resp,
+                'Invalid question ID. Expecting a number.',
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+
+        const question: Question = plainToClass(Question, req.body as Question);
+        try{
+            await validateOrReject(question)
+        }catch(e) {
+            ResponseHandler.sendErrorJson(
+                resp,
+                e,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+
         try {
-            const qId = parseInt(req.params.questionId, 10);
-            if (isNaN(qId)) {
-                throw new Error('Invalid question ID. Expecting a number.');
-            }
             const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question);
             ResponseHandler.sendSuccessJson(resp, updatedQuestion);
         } catch (e) {
