@@ -18,7 +18,7 @@ export class AnswerController {
 
     @Put(':aid')
     private async updateAnswer(req: Request, resp: Response) {
-        let aid: number = parseInt(req.params.aid);
+        const aid: number = parseInt(req.params.aid, 10);
         if (isNaN(aid)) {
             ResponseHandler.sendErrorJson(
                 resp,
@@ -54,7 +54,7 @@ export class AnswerController {
     @Delete(':aid')
     private async deleteAnswer(req: Request, resp: Response) {
         try {
-            let aid: number = parseInt(req.params.aid);
+            const aid: number = parseInt(req.params.aid, 10);
             if (isNaN(aid)) {
                 throw Error('Invalid answer id');
             }

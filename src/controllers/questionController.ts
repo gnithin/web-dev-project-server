@@ -117,7 +117,7 @@ export class QuestionController {
 
     @Post(':qid/answers')
     private async createAnswerForQuestion(req: Request, resp: Response) {
-        let qid: number = parseInt(req.params.qid);
+        const qid: number = parseInt(req.params.qid, 10);
         if (isNaN(qid)) {
             ResponseHandler.sendErrorJson(
                 resp,
