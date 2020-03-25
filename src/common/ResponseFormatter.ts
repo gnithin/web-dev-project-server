@@ -1,3 +1,5 @@
+import ERROR_CODES from '../constants/errorCodes';
+
 export class ResponseFormatter {
     public static jsonSuccess(data: any) {
         return {
@@ -8,6 +10,10 @@ export class ResponseFormatter {
     }
 
     public static jsonError(message: string, code?: number) {
+        if (!code) {
+            code = ERROR_CODES.GENERAL;
+        }
+
         return {
             status: 0,
             message,
