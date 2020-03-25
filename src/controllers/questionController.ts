@@ -1,7 +1,9 @@
+import { AnswerService } from './../services/answerService';
 import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { QuestionService } from '../services/questionService';
 import { Question } from '../entities/question';
+import { Answer } from '../entities/answer';
 import { ResponseHandler } from '../common/ResponseHandler';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -10,9 +12,11 @@ import ERROR_CODES from '../constants/errorCodes';
 @Controller('api/questions')
 export class QuestionController {
     private service: QuestionService;
+    private answerService: AnswerService;
 
     constructor() {
         this.service = QuestionService.getInstance();
+        this.answerService = AnswerService.getInstance();
     }
 
     @Get()
@@ -106,6 +110,41 @@ export class QuestionController {
             const serviceResponse = await this.service
                 .deleteQuestion(qId);
             ResponseHandler.sendSuccessJson(resp, { affected: serviceResponse });
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Post(':qid/answers')
+    private async createAnswerForQuestion(req: Request, resp: Response) {
+        let qid: number = parseInt(req.params.qid);
+        if (isNaN(qid)) {
+            ResponseHandler.sendErrorJson(
+                resp,
+                'Invalid question id',
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+
+        const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
+        try{
+            await validateOrReject(reqAnswer)
+        }catch(e) {
+            ResponseHandler.sendErrorJson(
+                resp,
+                e,
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+
+        try {
+            const answer: Answer = await this.answerService.createAnswerForQuestion(reqAnswer, qid);
+            ResponseHandler.sendSuccessJson(resp, answer);
+
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
         }

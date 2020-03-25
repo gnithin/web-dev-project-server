@@ -16,41 +16,6 @@ export class AnswerController {
         this.service = AnswerService.getInstance();
     }
 
-    @Post('question/:qid')
-    private async createAnswerForQuestion(req: Request, resp: Response) {
-        let qid: number = parseInt(req.params.qid);
-        if (isNaN(qid)) {
-            ResponseHandler.sendErrorJson(
-                resp,
-                'Invalid question id',
-                ERROR_CODES.REQUEST_VALIDATION_ERR,
-                400
-            );
-            return;
-        }
-
-        const reqAnswer: Answer = plainToClass(Answer, req.body as Answer);
-        try{
-            await validateOrReject(reqAnswer)
-        }catch(e) {
-            ResponseHandler.sendErrorJson(
-                resp,
-                e,
-                ERROR_CODES.REQUEST_VALIDATION_ERR,
-                400
-            );
-            return;
-        }
-
-        try {
-            const answer: Answer = await this.service.createAnswerForQuestion(reqAnswer, qid);
-            ResponseHandler.sendSuccessJson(resp, answer);
-
-        } catch (e) {
-            ResponseHandler.sendErrorJson(resp, e.message);
-        }
-    }
-
     @Put(':aid')
     private async updateAnswer(req: Request, resp: Response) {
         let aid: number = parseInt(req.params.aid);
