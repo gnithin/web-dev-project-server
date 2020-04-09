@@ -24,12 +24,6 @@ export class UserController {
     }
 
     @Post('login')
-    // @Middleware(
-    //     [
-    //         passport.authenticate(authConstants.LOCAL, {session: true}),
-    //         UserAuthMiddleware,
-    //     ]
-    // )
     private async loginUser(req: Request, resp: Response) {
         let loginReq = plainToClass(UserLoginRequest, req.body);
 
@@ -133,12 +127,14 @@ export class UserController {
     @Get('details/:user')
     @Middleware(UserAuthMiddleware)
     private getUserDetails(req: Request, resp: Response) {
+        // TODO:
         return ResponseHandler.sendSuccessJson(resp, {todo: 'todo'});
     }
 
     @Get('all')
     @Middleware(AdminUserAuthMiddleware)
     private getAllUsers(req: Request, resp: Response) {
+        // TODO:
         return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
     }
 }
