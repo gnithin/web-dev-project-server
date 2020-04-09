@@ -9,7 +9,6 @@ import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import { AnswerController } from './controllers/answerController';
 import * as passport from 'passport';
-import { AuthenticationStrategy } from './common/auth/authenticationStrategy';
 import authConstants from './constants/auth';
 import UserAuth from './models/UserAuth';
 import { Session } from './entities/session';
@@ -28,7 +27,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Setup authentication
-passport.use(new AuthenticationStrategy());
 passport.serializeUser<UserAuth, string>((user: UserAuth, done) => {
     done(null, JSON.stringify(user));
 });

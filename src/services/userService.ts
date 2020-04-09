@@ -22,4 +22,10 @@ export class UserService {
     public async registerUser(user: User): Promise<User> {
         return await this.userRepository.save(user);
     }
+
+    public async findUserForEmail(email: string): Promise<User> {
+        return await this.userRepository.findOneOrFail({
+            email
+        })
+    }
 }

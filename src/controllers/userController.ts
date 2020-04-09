@@ -1,16 +1,17 @@
 import { Controller, Get, Middleware, Post } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { AdminUserAuthMiddleware, UserAuthMiddleware } from '../common/auth/authMiddleware';
-import * as passport from 'passport';
 import authConstants from '../constants/auth';
 import { ResponseHandler } from '../common/ResponseHandler';
 import ERROR_CODES from '../constants/errorCodes';
 import { UserService } from '../services/userService';
 import { classToPlain, plainToClass } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
+import { validate, validateOrReject } from 'class-validator';
 import { UserRequest } from '../models/UserRequest';
 import { User } from '../entities/user';
 import { UserResponse } from '../models/UserResponse';
+import { UserLoginRequest } from '../models/userLoginRequest';
+import UserAuth from '../models/UserAuth';
 
 const bcrypt = require('bcrypt');
 
@@ -22,15 +23,51 @@ export class UserController {
         this.userService = UserService.getInstance();
     }
 
-    @Get('login')
-    @Middleware(
-        [
-            passport.authenticate(authConstants.LOCAL, {session: true}),
-            UserAuthMiddleware,
-        ]
-    )
-    private loginUser(req: Request, resp: Response) {
-        return ResponseHandler.sendSuccessJson(resp, null);
+    @Post('login')
+    private async loginUser(req: Request, resp: Response) {
+        let loginReq = plainToClass(UserLoginRequest, req.body);
+
+        // Validate the request body
+        let validationErr = await validate(loginReq);
+        if (validationErr != null && validationErr.length > 0) {
+            ResponseHandler.sendErrorJson(resp, validationErr as any, ERROR_CODES.REQUEST_VALIDATION_ERR, 400);
+            return;
+        }
+
+        let userAuth: UserAuth;
+        try {
+            userAuth = await this.authenticateUser(loginReq);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message, ERROR_CODES.CREDENTIALS_INVALID, 401);
+            return;
+        }
+
+        req.login(userAuth, (err) => {
+            if (err) {
+                console.log('Errr - ', err);
+                ResponseHandler.sendErrorJson(resp, err, ERROR_CODES.INTERNAL_ERR, 500);
+                return;
+            }
+
+            let userResp: UserResponse = plainToClass(UserResponse, classToPlain(userAuth));
+            return ResponseHandler.sendSuccessJson(resp, userResp);
+        });
+    }
+
+    private async authenticateUser(loginReq: UserLoginRequest): Promise<UserAuth> {
+        let user: User;
+        try {
+            user = await this.userService.findUserForEmail(loginReq.email);
+        } catch (e) {
+            throw new Error('Username and/or passwords do not match!');
+        }
+
+        let didPasswordMatch = await bcrypt.compare(loginReq.password, user.passwordHash);
+        if (!didPasswordMatch) {
+            throw new Error('Username and/or passwords do not match!');
+        }
+
+        return plainToClass(UserAuth, user as UserAuth);
     }
 
     @Get('logout')
@@ -58,6 +95,21 @@ export class UserController {
             return;
         }
 
+        // Check if the email exists
+        try {
+            await this.userService.findUserForEmail(userReq.email);
+
+            ResponseHandler.sendErrorJson(
+                resp,
+                'User with email exists!',
+                ERROR_CODES.GENERAL,
+                400
+            );
+            return;
+        } catch (e) {
+            // If user not found, then all good.
+        }
+
         try {
             let user: User = await this.createUserForRequest(userReq);
             let createdUser = await this.userService.registerUser(user);
@@ -82,8 +134,7 @@ export class UserController {
         let user = plainToClass(User, (userReq as any as User));
 
         // Create password hash
-        let passwordHash = await bcrypt.hash(userReq.password, authConstants.SALT_ROUNDS);
-        user.passwordHash = passwordHash
+        user.passwordHash = await bcrypt.hash(userReq.password, authConstants.SALT_ROUNDS);
 
         return user;
     }
@@ -91,12 +142,14 @@ export class UserController {
     @Get('details/:user')
     @Middleware(UserAuthMiddleware)
     private getUserDetails(req: Request, resp: Response) {
+        // TODO:
         return ResponseHandler.sendSuccessJson(resp, {todo: 'todo'});
     }
 
     @Get('all')
     @Middleware(AdminUserAuthMiddleware)
     private getAllUsers(req: Request, resp: Response) {
+        // TODO:
         return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
     }
 }
