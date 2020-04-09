@@ -8,6 +8,14 @@ import { QuestionController } from './controllers/questionController';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import { AnswerController } from './controllers/answerController';
+import * as passport from 'passport';
+import authConstants from './constants/auth';
+import UserAuth from './models/UserAuth';
+import { Session } from './entities/session';
+import { TypeormStore } from 'connect-typeorm';
+import session = require('express-session');
+import cookieParser = require('cookie-parser');
+
 
 // Load the config
 // NOTE: dotenv does not allow overriding env vars, so loading only one of the configs.
@@ -18,7 +26,18 @@ if (process.env.NODE_ENV === 'development') {
     dotenv.config();
 }
 
-// Setup controllers
+// Setup authentication
+passport.serializeUser<UserAuth, string>((user: UserAuth, done) => {
+    done(null, JSON.stringify(user));
+});
+
+passport.deserializeUser<UserAuth, string>((userData: string, done) => {
+    let user: UserAuth = JSON.parse(userData);
+    done(null, user);
+});
+
+
+// Setup cors
 const corsOptions = {
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
     credentials: true,
@@ -27,12 +46,27 @@ const corsOptions = {
     preflightContinue: false,
 };
 
+// Setup session options
+const sessionOptions = {
+    secret: authConstants.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+};
+
+// Setup controllers
 class ChowkServer extends Server {
-    constructor() {
+    constructor(sessionStore: any) {
         // super(process.env.NODE_ENV === 'development');
         super(false);
-        this.app.use(bodyParser.json());
         this.app.use(cors(corsOptions));
+        this.app.use(bodyParser.json());
+        this.app.use(cookieParser());
+        this.app.use(session({
+            ...sessionOptions,
+            store: sessionStore,
+        }));
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
 
         super.addControllers(
             [
@@ -60,13 +94,18 @@ async function initializeServer() {
     // Connect to db
     console.log('Creating a db-connection - ');
 
-    // Create a connection
+    // Create a db connection
     const connection = await createConnection();
+
+    // Create the session repository
+    const sessionRepository = connection.getRepository(Session);
+    const sessionStore = new TypeormStore({})
+        .connect(sessionRepository);
 
     // Start the server
     console.log('Starting server');
     console.log(`Listening to port ${port}...`);
-    new ChowkServer().start(port);
+    new ChowkServer(sessionStore).start(port);
 }
 
 initializeServer().catch(e => {
