@@ -1,3 +1,6 @@
+import { ReputationPointRepository } from './../repositories/reputationPointRepository';
+import { ReputationPoint } from './../entities/reputation';
+import { User } from 'src/entities/user';
 import { AnswerRepository } from '../repositories/answerRepository';
 import { getConnection } from 'typeorm';
 import { Answer } from '../entities/answer';
@@ -6,11 +9,14 @@ import { QuestionService } from './questionService';
 export class AnswerService {
     private static instance: AnswerService;
     private answerRepository: AnswerRepository;
+    private reputationPointRepository: ReputationPointRepository;
     private questionService: QuestionService;
 
 
     private constructor() {
         this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
+        this.reputationPointRepository = getConnection()
+            .getCustomRepository(ReputationPointRepository);
         this.questionService = QuestionService.getInstance();
     }
 
@@ -34,6 +40,28 @@ export class AnswerService {
 
     public async deleteAnswerForId(aid: number) {
         await this.answerRepository.delete(aid);
+    }
+
+    public async addReputationToAnswer(aid: number, score: number, srcUser: User) {
+        const point = new ReputationPoint();
+        point.score = score;
+        point.srcUser = srcUser;
+        try {
+            point.targetAnswer = await this.getAnswerById(aid);
+            await this.reputationPointRepository.save(point);
+        } catch (e) {
+            console.error(e);
+            throw (e);
+        }
+    }
+
+    private async getAnswerById(aid: number): Promise<Answer> {
+        try {
+            return await this.answerRepository.findOneOrFail(aid);
+        } catch (e) {
+            console.error(e);
+            throw (e)
+        }
     }
 }
 

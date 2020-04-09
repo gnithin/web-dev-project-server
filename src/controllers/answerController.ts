@@ -1,18 +1,23 @@
-import { Controller, Delete, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Post, Put, Middleware } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { ResponseHandler } from '../common/ResponseHandler';
 import { Answer } from '../entities/answer';
 import { AnswerService } from '../services/answerService';
-import { Question } from '../entities/question';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import ERROR_CODES from '../constants/errorCodes';
+import UserAuth from '../models/UserAuth';
+import { User } from '../entities/user';
+import { UserAuthMiddleware } from '../common/auth/authMiddleware';
+import { UserService } from '../services/userService';
 
 @Controller('api/answers')
 export class AnswerController {
     private service: AnswerService;
+    private userService: UserService;
 
     constructor() {
+        this.userService = UserService.getInstance();
         this.service = AnswerService.getInstance();
     }
 
@@ -62,6 +67,40 @@ export class AnswerController {
             await this.service.deleteAnswerForId(aid);
             ResponseHandler.sendSuccessJson(resp, null);
 
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Post(':aid/upvote')
+    @Middleware(UserAuthMiddleware)
+    private async upvoteAnswer(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        const user: User = await this.userService.findUserForId(userAuth.id);
+        try {
+            const aid: number = parseInt(req.params.aid, 10);
+            if (isNaN(aid)) {
+                throw Error('Invalid answer id');
+            }
+            this.service.addReputationToAnswer(aid, 1, user);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Post(':aid/downvote')
+    @Middleware(UserAuthMiddleware)
+    private async downvoteAnswer(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        const user: User = await this.userService.findUserForId(userAuth.id);
+        try {
+            const aid: number = parseInt(req.params.aid, 10);
+            if (isNaN(aid)) {
+                throw Error('Invalid answer id');
+            }
+            this.service.addReputationToAnswer(aid, -1, user);
+            ResponseHandler.sendSuccessJson(resp, null);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
