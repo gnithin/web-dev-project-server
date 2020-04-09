@@ -20,9 +20,6 @@ export class User {
     @Column()
     passwordHash: string;
 
-    @Column()
-    salt: string;
-
     @OneToMany(type => Question, question => question.user)
     questions: Question[];
 
