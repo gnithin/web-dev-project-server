@@ -28,4 +28,10 @@ export class UserService {
             email
         })
     }
+
+    public async findUserForId(id: number): Promise<User> {
+        return await this.userRepository.findOneOrFail({
+            id,
+        });
+    }
 }
