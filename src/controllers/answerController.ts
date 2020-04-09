@@ -1,4 +1,4 @@
-import { Controller, Delete, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Middleware, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { ResponseHandler } from '../common/ResponseHandler';
 import { Answer } from '../entities/answer';
@@ -7,6 +7,8 @@ import { Question } from '../entities/question';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import ERROR_CODES from '../constants/errorCodes';
+import UserAuth from '../models/UserAuth';
+import { UserAuthMiddleware } from '../common/auth/authMiddleware';
 
 @Controller('api/answers')
 export class AnswerController {
@@ -17,6 +19,7 @@ export class AnswerController {
     }
 
     @Put(':aid')
+    @Middleware(UserAuthMiddleware)
     private async updateAnswer(req: Request, resp: Response) {
         const aid: number = parseInt(req.params.aid, 10);
         if (isNaN(aid)) {
@@ -43,7 +46,8 @@ export class AnswerController {
         }
 
         try {
-            const answer: Answer = await this.service.updateAnswerForId(aid, reqAnswer)
+            let user: UserAuth = (req.user as UserAuth);
+            const answer: Answer = await this.service.updateAnswerForId(aid, reqAnswer, user);
             ResponseHandler.sendSuccessJson(resp, answer);
 
         } catch (e) {
@@ -52,6 +56,7 @@ export class AnswerController {
     }
 
     @Delete(':aid')
+    @Middleware(UserAuthMiddleware)
     private async deleteAnswer(req: Request, resp: Response) {
         try {
             const aid: number = parseInt(req.params.aid, 10);
@@ -59,7 +64,8 @@ export class AnswerController {
                 throw Error('Invalid answer id');
             }
 
-            await this.service.deleteAnswerForId(aid);
+            let user:UserAuth = (req.user as UserAuth);
+            await this.service.deleteAnswerForId(aid, user);
             ResponseHandler.sendSuccessJson(resp, null);
 
         } catch (e) {
