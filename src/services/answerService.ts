@@ -55,13 +55,13 @@ export class AnswerService {
         }
     }
 
-    public async deleteReputationVote(aid: number, srcUser: User) {
+    public async deleteReputationVote(aid: number, srcUserId: number) {
         await getManager()
         .createQueryBuilder()
         .delete()
         .from(ReputationPoint)
         .where('targetAnswer = :aid', {aid})
-        .andWhere('srcUser = :uid', {uid: srcUser.id})
+        .andWhere('srcUser = :uid', {uid: srcUserId})
         .execute();
     }
 
