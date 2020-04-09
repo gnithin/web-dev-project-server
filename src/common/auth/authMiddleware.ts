@@ -15,7 +15,7 @@ let AdminUserAuthMiddleware = (req: Request, resp: Response, next: any) => {
         return;
     }
 
-    let user: UserAuth = req.user as UserAuth;
+    let user = req.user as UserAuth;
     if (!user.isAdmin) {
         resp.status(401).json({message: 'Unauthorized access!'});
         return;

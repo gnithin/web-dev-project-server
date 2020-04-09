@@ -26,11 +26,11 @@ if (process.env.NODE_ENV === 'development') {
 
 // Setup authentication
 passport.use(new AuthenticationStrategy());
-passport.serializeUser((user: UserAuth, done) => {
+passport.serializeUser<UserAuth, string>((user: UserAuth, done) => {
     done(null, JSON.stringify(user));
 });
 
-passport.deserializeUser((userData: string, done) => {
+passport.deserializeUser<UserAuth, string>((userData: string, done) => {
     let user: UserAuth = JSON.parse(userData);
     done(null, user);
 });
