@@ -95,6 +95,21 @@ export class UserController {
             return;
         }
 
+        // Check if the email exists
+        try {
+            await this.userService.findUserForEmail(userReq.email);
+
+            ResponseHandler.sendErrorJson(
+                resp,
+                'User with email exists!',
+                ERROR_CODES.GENERAL,
+                400
+            );
+            return;
+        } catch (e) {
+            // If user not found, then all good.
+        }
+
         try {
             let user: User = await this.createUserForRequest(userReq);
             let createdUser = await this.userService.registerUser(user);
