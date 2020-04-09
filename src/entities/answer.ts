@@ -1,4 +1,4 @@
-import { ReputationPoint } from './reputation';
+import { ReputationPoint } from './reputationPoint';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Question } from './question';
 import { User } from './user';

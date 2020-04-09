@@ -1,4 +1,4 @@
-import { ReputationPoint } from './../entities/reputation';
+import { ReputationPoint } from '../entities/reputationPoint';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(ReputationPoint)

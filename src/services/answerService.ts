@@ -1,5 +1,5 @@
 import { ReputationPointRepository } from './../repositories/reputationPointRepository';
-import { ReputationPoint } from './../entities/reputation';
+import { ReputationPoint } from '../entities/reputationPoint';
 import { User } from 'src/entities/user';
 import { AnswerRepository } from '../repositories/answerRepository';
 import { getConnection } from 'typeorm';
@@ -51,7 +51,7 @@ export class AnswerService {
             await this.reputationPointRepository.save(point);
         } catch (e) {
             console.error(e);
-            throw (e);
+            throw e;
         }
     }
 
