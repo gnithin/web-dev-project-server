@@ -2,7 +2,7 @@ import { ReputationPointRepository } from './../repositories/reputationPointRepo
 import { ReputationPoint } from '../entities/reputationPoint';
 import { User } from 'src/entities/user';
 import { AnswerRepository } from '../repositories/answerRepository';
-import { getConnection } from 'typeorm';
+import { getConnection, getManager } from 'typeorm';
 import { Answer } from '../entities/answer';
 import { QuestionService } from './questionService';
 
@@ -53,6 +53,16 @@ export class AnswerService {
             console.error(e);
             throw e;
         }
+    }
+
+    public async deleteReputationVote(aid: number, srcUser: User) {
+        await getManager()
+        .createQueryBuilder()
+        .delete()
+        .from(ReputationPoint)
+        .where('targetAnswer = :aid', {aid})
+        .andWhere('srcUser = :uid', {uid: srcUser.id})
+        .execute();
     }
 
     private async getAnswerById(aid: number): Promise<Answer> {

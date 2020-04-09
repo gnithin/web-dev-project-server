@@ -105,4 +105,21 @@ export class AnswerController {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
     }
+
+    @Delete(':aid/votes')
+    @Middleware(UserAuthMiddleware)
+    private async deleteVote(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        const user: User = await this.userService.findUserForId(userAuth.id);
+        try {
+            const aid: number = parseInt(req.params.aid, 10);
+            if (isNaN(aid)) {
+                throw Error('Invalid answer id');
+            }
+            this.service.deleteReputationVote(aid, user);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
 }
