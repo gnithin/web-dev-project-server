@@ -37,10 +37,12 @@ export class QuestionService {
         }
 
         try {
-            const question = await this.questionRepository.findOneOrFail(qId, {relations});
-            for (const answer of question.answers) {
-                const rep = await this.getAnswerReputation(answer.id);
-                answer.totalReputation = rep;
+            const question = await this.questionRepository.findOneOrFail(qId, { relations });
+            if (includeAnswers) {
+                for (const answer of question.answers) {
+                    const rep = await this.getAnswerReputation(answer.id);
+                    answer.totalReputation = rep;
+                }
             }
             return question;
         } catch (e) {
@@ -85,14 +87,17 @@ export class QuestionService {
         }
     }
 
-    private async getAnswerReputation(answerId: number) : Promise<number> {
+    private async getAnswerReputation(answerId: number): Promise<number> {
         const reps = await getManager()
-        .createQueryBuilder(Answer, 'answer')
-        .leftJoin('answer.reputations', 'reputation')
-        .select('SUM(reputation.score)', 'sum')
-        .whereInIds(answerId)
-        .getRawOne();
+            .createQueryBuilder(Answer, 'answer')
+            .leftJoin('answer.reputations', 'reputation')
+            .select('SUM(reputation.score)', 'sum')
+            .whereInIds(answerId)
+            .getRawOne();
 
+        if (!reps.sum) {
+            return 0;
+        }
         return reps.sum;
     }
 }
