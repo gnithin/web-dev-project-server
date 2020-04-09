@@ -10,4 +10,7 @@ export class UserResponse {
 
     @Expose()
     name: string;
+
+    @Expose()
+    isAdmin: boolean;
 }
