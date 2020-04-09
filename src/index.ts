@@ -39,7 +39,7 @@ const corsOptions = {
 // Setup session options
 const sessionOptions = {
     secret: authConstants.SESSION_SECRET,
-    resave: true,
+    resave: false,
     saveUninitialized: true,
 };
 
