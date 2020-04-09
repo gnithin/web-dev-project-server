@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ReputationPoint } from './reputation';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Question } from './question';
 import { User } from './user';
 import { IsNotEmpty } from 'class-validator';
@@ -19,4 +20,9 @@ export class Answer {
 
     @ManyToOne(type => User, user => user.answers)
     user: User
+
+    @OneToMany(type => ReputationPoint, reputationPoint => reputationPoint.targetAnswer)
+    reputations: ReputationPoint[]
+
+    totalReputation: number
 }

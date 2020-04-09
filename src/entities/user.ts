@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ReputationPoint } from './reputation';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { Question } from './question';
 import { Answer } from './answer';
 
@@ -15,4 +16,8 @@ export class User {
 
     @OneToMany(type => Answer, answer => answer.user)
     answers: Answer[];
+
+    @OneToMany(type => ReputationPoint, reputationPoint => reputationPoint.srcUser)
+    @JoinColumn({name: 'given_reputations'})
+    givenReputations: ReputationPoint[];
 }
