@@ -12,6 +12,7 @@ import { User } from '../entities/user';
 import { UserResponse } from '../models/UserResponse';
 import { UserLoginRequest } from '../models/userLoginRequest';
 import UserAuth from '../models/UserAuth';
+import { UserDetailsResponse } from '../models/userDetailsResponse';
 
 const bcrypt = require('bcrypt');
 
@@ -139,11 +140,13 @@ export class UserController {
         return user;
     }
 
-    @Get('details/:user')
+    @Get('details')
     @Middleware(UserAuthMiddleware)
-    private getUserDetails(req: Request, resp: Response) {
-        // TODO:
-        return ResponseHandler.sendSuccessJson(resp, {todo: 'todo'});
+    private async getUserDetails(req: Request, resp: Response) {
+        let userAuth: UserAuth = req.user as UserAuth;
+        let user: User = await this.userService.findUserForId(userAuth.id);
+        let userDetails: UserDetailsResponse = plainToClass(UserDetailsResponse, user as UserDetailsResponse);
+        return ResponseHandler.sendSuccessJson(resp, userDetails);
     }
 
     @Get('all')
