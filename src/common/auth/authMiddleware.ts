@@ -1,31 +1,26 @@
 import { Request, Response } from 'express';
-import * as passport from 'passport';
-import authConstants from '../../constants/auth';
+import UserAuth from '../../models/UserAuth';
 
 let UserAuthMiddleware = (req: Request, resp: Response, next: any) => {
-    return passport.authenticate(
-        authConstants.LOCAL,
-        middlewareHandler(req, resp, next),
-    )(req, resp, next);
+    if (!req.isAuthenticated()) {
+        resp.status(401).json({message: 'Unauthorized access!'});
+        return;
+    }
+    next();
 };
 
-// TODO: have a user-middleware-handler and an admin-middleware handler
-
-let middlewareHandler = (req: Request, resp: Response, next: any) => {
-    return (err: any, user: any, challenges: string, status: number) => {
-        if (!status) {
-            status = 401;
-        }
-
-        if (!user) {
-            resp.status(status).json({message: challenges});
-            return;
-        }
-
-        // Pass the user details into the user locals
-        resp.locals.user = user;
-        next();
+let AdminUserAuthMiddleware = (req: Request, resp: Response, next: any) => {
+    if (!req.isAuthenticated()) {
+        resp.status(401).json({message: 'Unauthorized access!'});
+        return;
     }
+
+    let user: UserAuth = req.user as UserAuth;
+    if (!user.isAdmin) {
+        resp.status(401).json({message: 'Unauthorized access!'});
+        return;
+    }
+    next();
 };
 
 export default UserAuthMiddleware;

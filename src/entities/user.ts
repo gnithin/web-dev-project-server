@@ -29,4 +29,7 @@ export class User {
 
     @OneToMany(type => Answer, answer => answer.user)
     answers: Answer[];
+
+    @Column({default: false})
+    isAdmin: boolean;
 }

@@ -1,21 +1,44 @@
-import { Controller, Get, Middleware, Post } from '@overnightjs/core';
+import { Controller, Get, Middleware } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import UserAuthMiddleware from '../common/auth/authMiddleware';
+import * as passport from 'passport';
+import authConstants from '../constants/auth';
 
 
 @Controller('api/users')
 export class UserController {
-    @Post('authenticate')
+    @Get('login')
+    @Middleware(
+        passport.authenticate(
+            authConstants.LOCAL,
+            {
+                session: true,
+            }
+        )
+    )
     private authenticateUser(req: Request, resp: Response) {
-        // TODO:
-        return resp.status(200).json({todo: 'todo'});
+        // TODO: Detect if there is actually a user available already
+        if (req.isAuthenticated()) {
+            return resp.status(200).json({data: req.user});
+        }
+        return resp.status(401).json({message: 'couldn\'t login'});
+    }
+
+    @Get('logout')
+    private logoutUser(req: Request, resp: Response) {
+        if (!req.isAuthenticated()) {
+            return resp.status(400).json({message: 'couldn\'t logout'});
+        }
+
+        req.logOut();
+        return resp.status(200).json({message: 'success!'});
     }
 
     @Get('details/:user')
     @Middleware(UserAuthMiddleware)
     private getUserDetails(req: Request, resp: Response) {
         // TODO:
-        return resp.status(200).json({todo: 'todo'});
+        return resp.status(200).json({details: 'all-the user details'});
     }
 
     @Get('register')

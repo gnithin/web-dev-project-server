@@ -11,6 +11,7 @@ import { AnswerController } from './controllers/answerController';
 import * as passport from 'passport';
 import { AuthenticationStrategy } from './common/auth/authenticationStrategy';
 import authConstants from './constants/auth';
+import UserAuth from './models/UserAuth';
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
 
@@ -25,6 +26,14 @@ if (process.env.NODE_ENV === 'development') {
 
 // Setup authentication
 passport.use(new AuthenticationStrategy());
+passport.serializeUser((user: UserAuth, done) => {
+    done(null, JSON.stringify(user));
+});
+
+passport.deserializeUser((userData: string, done) => {
+    let user: UserAuth = JSON.parse(userData);
+    done(null, user);
+});
 
 
 // Setup cors
