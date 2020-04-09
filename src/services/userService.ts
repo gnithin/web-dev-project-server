@@ -34,4 +34,10 @@ export class UserService {
             id,
         });
     }
+
+    public async findUserDetailsForId(id: number): Promise<User> {
+       return await this.userRepository.findOneOrFail(id, {
+           relations: ["questions", "answers"]
+       })
+    }
 }

@@ -144,7 +144,7 @@ export class UserController {
     @Middleware(UserAuthMiddleware)
     private async getUserDetails(req: Request, resp: Response) {
         let userAuth: UserAuth = req.user as UserAuth;
-        let user: User = await this.userService.findUserForId(userAuth.id);
+        let user: User = await this.userService.findUserDetailsForId(userAuth.id);
         let userDetails: UserDetailsResponse = plainToClass(UserDetailsResponse, user as UserDetailsResponse);
         return ResponseHandler.sendSuccessJson(resp, userDetails);
     }
