@@ -6,10 +6,13 @@ import authConstants from '../constants/auth';
 import { ResponseHandler } from '../common/ResponseHandler';
 import ERROR_CODES from '../constants/errorCodes';
 import { UserService } from '../services/userService';
-import { plainToClass } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserRequest } from '../models/UserRequest';
+import { User } from '../entities/user';
+import { UserResponse } from '../models/UserResponse';
 
+const bcrypt = require('bcrypt');
 
 @Controller('api/users')
 export class UserController {
@@ -43,10 +46,10 @@ export class UserController {
 
     @Post('register')
     private async registerUser(req: Request, resp: Response) {
-        let user: UserRequest = plainToClass(UserRequest, (req.body as UserRequest));
+        let userReq: UserRequest = plainToClass(UserRequest, (req.body as UserRequest));
 
         try {
-            await validateOrReject(user);
+            await validateOrReject(userReq);
         } catch (e) {
             ResponseHandler.sendErrorJson(
                 resp, e,
@@ -55,8 +58,34 @@ export class UserController {
             return;
         }
 
-        let userResp = await this.userService.registerUser(user);
-        ResponseHandler.sendSuccessJson(resp, userResp);
+        try {
+            let user: User = await this.createUserForRequest(userReq);
+            let createdUser = await this.userService.registerUser(user);
+
+            let userResp: UserResponse = plainToClass(
+                UserResponse,
+                classToPlain(createdUser),
+            );
+            console.log('User resp - ', userResp);
+            ResponseHandler.sendSuccessJson(resp, userResp);
+
+        } catch (e) {
+            ResponseHandler.sendErrorJson(
+                resp, e,
+                ERROR_CODES.INTERNAL_ERR, 400
+            );
+            return;
+        }
+    }
+
+    private async createUserForRequest(userReq: UserRequest): Promise<User> {
+        let user = plainToClass(User, (userReq as any as User));
+
+        // Create password hash
+        let passwordHash = await bcrypt.hash(userReq.password, authConstants.SALT_ROUNDS);
+        user.passwordHash = passwordHash
+
+        return user;
     }
 
     @Get('details/:user')

@@ -1,7 +1,8 @@
 import { UserRepository } from '../repositories/userRepository';
 import { getConnection } from 'typeorm';
-import { UserResponse } from '../models/UserResponse';
-import { UserRequest } from '../models/UserRequest';
+import { User } from '../entities/user';
+
+const crypto = require('crypto');
 
 export class UserService {
     private static instance: UserService;
@@ -18,8 +19,7 @@ export class UserService {
         return this.instance;
     }
 
-    public async registerUser(user: UserRequest): Promise<UserResponse> {
-        console.log('SERVICE - ', user);
-        return (user as any as UserResponse);
+    public async registerUser(user: User): Promise<User> {
+        return await this.userRepository.save(user);
     }
 }
