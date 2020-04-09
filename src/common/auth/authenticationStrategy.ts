@@ -12,7 +12,7 @@ export class AuthenticationStrategy extends passport.Strategy {
             id: 123,
             email: 'dummy-email',
             name: 'dummy',
-            isAdmin: false,
+            isAdmin: true,
         };
 
         this.success(dummyUser);

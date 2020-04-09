@@ -1,6 +1,6 @@
 import { Controller, Get, Middleware } from '@overnightjs/core';
 import { Request, Response } from 'express';
-import UserAuthMiddleware from '../common/auth/authMiddleware';
+import { AdminUserAuthMiddleware, UserAuthMiddleware } from '../common/auth/authMiddleware';
 import * as passport from 'passport';
 import authConstants from '../constants/auth';
 
@@ -16,7 +16,7 @@ export class UserController {
             }
         )
     )
-    private authenticateUser(req: Request, resp: Response) {
+    private loginUser(req: Request, resp: Response) {
         // TODO: Detect if there is actually a user available already
         if (req.isAuthenticated()) {
             return resp.status(200).json({data: req.user});
@@ -34,6 +34,12 @@ export class UserController {
         return resp.status(200).json({message: 'success!'});
     }
 
+    @Get('register')
+    private registerUser(req: Request, resp: Response) {
+        // TODO:
+        return resp.status(200).json({todo: 'todo'});
+    }
+
     @Get('details/:user')
     @Middleware(UserAuthMiddleware)
     private getUserDetails(req: Request, resp: Response) {
@@ -41,14 +47,8 @@ export class UserController {
         return resp.status(200).json({details: 'all-the user details'});
     }
 
-    @Get('register')
-    private registerUser(req: Request, resp: Response) {
-        // TODO:
-        return resp.status(200).json({todo: 'todo'});
-    }
-
     @Get('all')
-    @Middleware(UserAuthMiddleware)
+    @Middleware(AdminUserAuthMiddleware)
     private getAllUsers(req: Request, resp: Response) {
         return resp.status(200).json({'status': 'success!'})
     }

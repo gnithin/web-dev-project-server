@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import UserAuth from '../../models/UserAuth';
 
-let UserAuthMiddleware = (req: Request, resp: Response, next: any) => {
+export const UserAuthMiddleware = (req: Request, resp: Response, next: any) => {
     if (!req.isAuthenticated()) {
         resp.status(401).json({message: 'Unauthorized access!'});
         return;
@@ -9,7 +9,7 @@ let UserAuthMiddleware = (req: Request, resp: Response, next: any) => {
     next();
 };
 
-let AdminUserAuthMiddleware = (req: Request, resp: Response, next: any) => {
+export const AdminUserAuthMiddleware = (req: Request, resp: Response, next: any) => {
     if (!req.isAuthenticated()) {
         resp.status(401).json({message: 'Unauthorized access!'});
         return;
@@ -23,4 +23,3 @@ let AdminUserAuthMiddleware = (req: Request, resp: Response, next: any) => {
     next();
 };
 
-export default UserAuthMiddleware;
