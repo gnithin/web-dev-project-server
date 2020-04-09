@@ -1,6 +1,7 @@
 import { Question } from '../entities/question';
-import { getConnection } from 'typeorm';
+import { getConnection, getManager } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
+import { Answer } from '../entities/answer';
 
 export class QuestionService {
     private static instance: QuestionService;
@@ -30,15 +31,18 @@ export class QuestionService {
     }
 
     public async getQuestionById(qId: number, includeAnswers: boolean = true): Promise<Question> {
-        let relations: Array<string> = ['user'];
+        const relations: string[] = ['user'];
         if (includeAnswers) {
             relations.push('answers')
         }
 
         try {
-            return await this.questionRepository.findOneOrFail(qId, {
-                relations: relations
-            });
+            const question = await this.questionRepository.findOneOrFail(qId, {relations});
+            for (const answer of question.answers) {
+                const rep = await this.getAnswerReputation(answer.id);
+                answer.totalReputation = rep;
+            }
+            return question;
         } catch (e) {
             console.error(e);
             throw (e);
@@ -59,7 +63,7 @@ export class QuestionService {
     public async updateQuestion(qId: number, question: Question): Promise<Question> {
         console.log('Updating - ', qId);
         try {
-            if(await this.questionRepository.findOne(qId) === undefined) {
+            if (await this.questionRepository.findOne(qId) === undefined) {
                 throw new Error('Entity does not exist');
             }
             question.id = qId;
@@ -79,5 +83,16 @@ export class QuestionService {
             console.error(e);
             throw (e);
         }
+    }
+
+    private async getAnswerReputation(answerId: number) : Promise<number> {
+        const reps = await getManager()
+        .createQueryBuilder(Answer, 'answer')
+        .leftJoin('answer.reputations', 'reputation')
+        .select('SUM(reputation.score)', 'sum')
+        .whereInIds(answerId)
+        .getRawOne();
+
+        return reps.sum;
     }
 }
