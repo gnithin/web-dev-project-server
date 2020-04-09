@@ -8,21 +8,20 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @IsNotEmpty()
     @IsEmail()
     @Column()
     email: string;
 
     @IsNotEmpty()
     @Column()
+    name: string;
+
+    @Column()
     passwordHash: string;
 
-    @IsNotEmpty()
     @Column()
     salt: string;
-
-    @IsNotEmpty()
-    @Column()
-    name: string;
 
     @OneToMany(type => Question, question => question.user)
     questions: Question[];
