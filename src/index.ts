@@ -8,6 +8,8 @@ import { QuestionController } from './controllers/questionController';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import { AnswerController } from './controllers/answerController';
+import * as passport from 'passport';
+import { AuthenticationStrategy } from './common/auth/authenticationStrategy';
 
 // Load the config
 // NOTE: dotenv does not allow overriding env vars, so loading only one of the configs.
@@ -18,7 +20,11 @@ if (process.env.NODE_ENV === 'development') {
     dotenv.config();
 }
 
-// Setup controllers
+// Setup authentication
+passport.use(new AuthenticationStrategy());
+
+
+// Setup cors
 const corsOptions = {
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
     credentials: true,
@@ -27,12 +33,14 @@ const corsOptions = {
     preflightContinue: false,
 };
 
+// Setup controllers
 class ChowkServer extends Server {
     constructor() {
         // super(process.env.NODE_ENV === 'development');
         super(false);
         this.app.use(bodyParser.json());
         this.app.use(cors(corsOptions));
+        this.app.use(passport.initialize());
 
         super.addControllers(
             [
