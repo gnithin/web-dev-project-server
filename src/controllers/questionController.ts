@@ -117,6 +117,28 @@ export class QuestionController {
         }
     }
 
+    @Get(':qid/answers')
+    private async getAnswersForQuestion(req: Request, resp: Response) {
+        const qid: number = parseInt(req.params.qid, 10);
+        const userAuth: UserAuth = req.user as UserAuth;
+        if (isNaN(qid)) {
+            ResponseHandler.sendErrorJson(
+                resp,
+                'Invalid question id',
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+        try {
+            const answers = await this.service.getAnswersForQuestion(qid, userAuth?.id);
+            ResponseHandler.sendSuccessJson(resp, answers);
+
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
     @Post(':qid/answers')
     private async createAnswerForQuestion(req: Request, resp: Response) {
         const qid: number = parseInt(req.params.qid, 10);

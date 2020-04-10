@@ -1,3 +1,4 @@
+import { AnswerRepository } from './../repositories/answerRepository';
 import { Question } from '../entities/question';
 import { getConnection, getManager } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
@@ -7,10 +8,12 @@ import { ReputationPointRepository } from '../repositories/reputationPointReposi
 export class QuestionService {
     private static instance: QuestionService;
     private questionRepository: QuestionRepository;
+    private answerRepository: AnswerRepository;
     private reputationPointRepository: ReputationPointRepository;
 
     private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
+        this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
         this.reputationPointRepository = getConnection()
             .getCustomRepository(ReputationPointRepository);
     }
@@ -34,24 +37,29 @@ export class QuestionService {
         }
     }
 
+    public async getAnswersForQuestion(qId: number, srcUserId?: number) : Promise<Answer[]> {
+        const answers = await this.answerRepository.find({
+            where: {question: {id: qId}}
+        });
+
+        for (const answer of answers) {
+            const rep = await this.getAnswerReputation(answer.id);
+            answer.totalReputation = rep;
+            const point = await this.reputationPointRepository.findOne({
+                where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
+            });
+            answer.currentUserVote = point?.score;
+        }
+        
+        return answers;
+    }
     public async getQuestionById(qId: number, includeAnswers: boolean = true, srcUserId?: number): Promise<Question> {
         const relations: string[] = ['user'];
-        if (includeAnswers) {
-            relations.push('answers')
-        }
 
         try {
             const question = await this.questionRepository.findOneOrFail(qId, { relations });
             if (includeAnswers) {
-                for (const answer of question.answers) {
-                    const rep = await this.getAnswerReputation(answer.id);
-                    answer.totalReputation = rep;
-                    const point = await this.reputationPointRepository.findOne({
-                        where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
-                    });
-                    answer.currentUserVote = point?.score;
-
-                }
+                question.answers = await this.getAnswersForQuestion(qId, srcUserId);
             }
             return question;
         } catch (e) {
