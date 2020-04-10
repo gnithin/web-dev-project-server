@@ -2,13 +2,17 @@ import { Question } from '../entities/question';
 import { getConnection, getManager } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
 import { Answer } from '../entities/answer';
+import { ReputationPointRepository } from '../repositories/reputationPointRepository';
 
 export class QuestionService {
     private static instance: QuestionService;
     private questionRepository: QuestionRepository;
+    private reputationPointRepository: ReputationPointRepository;
 
     private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
+        this.reputationPointRepository = getConnection()
+            .getCustomRepository(ReputationPointRepository);
     }
 
     public static getInstance() {
@@ -30,7 +34,7 @@ export class QuestionService {
         }
     }
 
-    public async getQuestionById(qId: number, includeAnswers: boolean = true): Promise<Question> {
+    public async getQuestionById(qId: number, includeAnswers: boolean = true, srcUserId?: number): Promise<Question> {
         const relations: string[] = ['user'];
         if (includeAnswers) {
             relations.push('answers')
@@ -42,6 +46,11 @@ export class QuestionService {
                 for (const answer of question.answers) {
                     const rep = await this.getAnswerReputation(answer.id);
                     answer.totalReputation = rep;
+                    const point = await this.reputationPointRepository.findOne({
+                        where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
+                    });
+                    answer.currentUserVote = point?.score;
+
                 }
             }
             return question;

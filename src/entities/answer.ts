@@ -25,4 +25,6 @@ export class Answer {
     reputations: ReputationPoint[]
 
     totalReputation: number
+
+    [key: string]: any;
 }
