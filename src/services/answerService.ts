@@ -43,7 +43,13 @@ export class AnswerService {
     }
 
     public async addReputationToAnswer(aid: number, score: number, srcUser: User) {
-        const point = new ReputationPoint();
+        let point;
+        point = await this.reputationPointRepository.findOne({
+            where: { srcUser: { id: srcUser.id }, targetAnswer: { id: aid } }
+        })
+        if (!point) {
+            point = new ReputationPoint();
+        }
         point.score = score;
         point.srcUser = srcUser;
         try {
@@ -57,12 +63,12 @@ export class AnswerService {
 
     public async deleteReputationVote(aid: number, srcUserId: number) {
         await getManager()
-        .createQueryBuilder()
-        .delete()
-        .from(ReputationPoint)
-        .where('targetAnswer = :aid', {aid})
-        .andWhere('srcUser = :uid', {uid: srcUserId})
-        .execute();
+            .createQueryBuilder()
+            .delete()
+            .from(ReputationPoint)
+            .where('targetAnswer = :aid', { aid })
+            .andWhere('srcUser = :uid', { uid: srcUserId })
+            .execute();
     }
 
     private async getAnswerById(aid: number): Promise<Answer> {
