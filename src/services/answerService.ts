@@ -1,5 +1,5 @@
-import { ReputationPointRepository } from './../repositories/reputationPointRepository';
-import { ReputationPoint } from '../entities/reputationPoint';
+import { AnswerReputationPointRepository } from '../repositories/answerReputationPointRepository';
+import { AnswerReputationPoint } from '../entities/answerReputationPoint';
 import { User } from 'src/entities/user';
 import { AnswerRepository } from '../repositories/answerRepository';
 import { getConnection, getManager } from 'typeorm';
@@ -9,14 +9,14 @@ import { QuestionService } from './questionService';
 export class AnswerService {
     private static instance: AnswerService;
     private answerRepository: AnswerRepository;
-    private reputationPointRepository: ReputationPointRepository;
+    private answerReputationPointRepository: AnswerReputationPointRepository;
     private questionService: QuestionService;
 
 
     private constructor() {
         this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
-        this.reputationPointRepository = getConnection()
-            .getCustomRepository(ReputationPointRepository);
+        this.answerReputationPointRepository = getConnection()
+            .getCustomRepository(AnswerReputationPointRepository);
         this.questionService = QuestionService.getInstance();
     }
 
@@ -44,17 +44,17 @@ export class AnswerService {
 
     public async addReputationToAnswer(aid: number, score: number, srcUser: User) {
         let point;
-        point = await this.reputationPointRepository.findOne({
+        point = await this.answerReputationPointRepository.findOne({
             where: { srcUser: { id: srcUser.id }, targetAnswer: { id: aid } }
         })
         if (!point) {
-            point = new ReputationPoint();
+            point = new AnswerReputationPoint();
         }
         point.score = score;
         point.srcUser = srcUser;
         try {
             point.targetAnswer = await this.getAnswerById(aid);
-            await this.reputationPointRepository.save(point);
+            await this.answerReputationPointRepository.save(point);
         } catch (e) {
             console.error(e);
             throw e;
@@ -65,7 +65,7 @@ export class AnswerService {
         await getManager()
             .createQueryBuilder()
             .delete()
-            .from(ReputationPoint)
+            .from(AnswerReputationPoint)
             .where('targetAnswer = :aid', { aid })
             .andWhere('srcUser = :uid', { uid: srcUserId })
             .execute();

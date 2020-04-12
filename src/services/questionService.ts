@@ -3,19 +3,19 @@ import { Question } from '../entities/question';
 import { getConnection, getManager } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
 import { Answer } from '../entities/answer';
-import { ReputationPointRepository } from '../repositories/reputationPointRepository';
+import { AnswerReputationPointRepository } from '../repositories/answerReputationPointRepository';
 
 export class QuestionService {
     private static instance: QuestionService;
     private questionRepository: QuestionRepository;
     private answerRepository: AnswerRepository;
-    private reputationPointRepository: ReputationPointRepository;
+    private answerReputationPointRepository: AnswerReputationPointRepository;
 
     private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
         this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
-        this.reputationPointRepository = getConnection()
-            .getCustomRepository(ReputationPointRepository);
+        this.answerReputationPointRepository = getConnection()
+            .getCustomRepository(AnswerReputationPointRepository);
     }
 
     public static getInstance() {
@@ -45,7 +45,7 @@ export class QuestionService {
         for (const answer of answers) {
             const rep = await this.getAnswerReputation(answer.id);
             answer.totalReputation = rep;
-            const point = await this.reputationPointRepository.findOne({
+            const point = await this.answerReputationPointRepository.findOne({
                 where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
             });
             answer.currentUserVote = point?.score;

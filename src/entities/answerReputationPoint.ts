@@ -5,7 +5,7 @@ import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn, Unique }
 
 @Entity({ name: 'reputation_points' })
 @Unique(['srcUser', 'targetAnswer'])
-export class ReputationPoint {
+export class AnswerReputationPoint {
     @PrimaryGeneratedColumn()
     id: number;
 
