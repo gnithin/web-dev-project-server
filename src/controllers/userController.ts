@@ -161,10 +161,15 @@ export class UserController {
         let userId = parseInt(userIdStr);
         try {
             let user = await this.userService.findUserDetailsForId(userId);
-            ResponseHandler.sendSuccessJson(
-                resp,
-                plainToClass(UserPublicDetailsResponse, user as UserPublicDetailsResponse)
-            );
+            let userAuth: UserAuth = req.user as UserAuth;
+            let userResponse;
+            if(userAuth && userAuth.id === userId) {
+                userResponse = plainToClass(UserDetailsResponse, user as UserDetailsResponse);
+            } else {
+                userResponse = plainToClass(UserPublicDetailsResponse, user as UserPublicDetailsResponse)
+            }
+
+            ResponseHandler.sendSuccessJson(resp, userResponse);
             return;
 
         } catch (e) {
