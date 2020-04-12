@@ -33,12 +33,13 @@ export class QuestionController {
 
     @Get(':questionId')
     private async getQuestionById(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
         try {
             const qId = parseInt(req.params.questionId, 10);
             if (isNaN(qId)) {
                 throw new Error('Invalid question ID. Expecting a number.');
             }
-            const question: Question = await this.service.getQuestionById(qId);
+            const question: Question = await this.service.getQuestionById(qId, true, userAuth?.id);
             ResponseHandler.sendSuccessJson(resp, question);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -120,6 +121,28 @@ export class QuestionController {
             const serviceResponse = await this.service
                 .deleteQuestion(qId, user);
             ResponseHandler.sendSuccessJson(resp, { affected: serviceResponse });
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Get(':qid/answers')
+    private async getAnswersForQuestion(req: Request, resp: Response) {
+        const qid: number = parseInt(req.params.qid, 10);
+        const userAuth: UserAuth = req.user as UserAuth;
+        if (isNaN(qid)) {
+            ResponseHandler.sendErrorJson(
+                resp,
+                'Invalid question id',
+                ERROR_CODES.REQUEST_VALIDATION_ERR,
+                400
+            );
+            return;
+        }
+        try {
+            const answers = await this.service.getAnswersForQuestion(qid, userAuth?.id);
+            ResponseHandler.sendSuccessJson(resp, answers);
+
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
