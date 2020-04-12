@@ -82,7 +82,7 @@ export class AnswerController {
             if (isNaN(aid)) {
                 throw Error('Invalid answer id');
             }
-            this.service.addReputationToAnswer(aid, 1, user);
+            await this.service.addReputationToAnswer(aid, 1, user);
             ResponseHandler.sendSuccessJson(resp, null);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -99,7 +99,7 @@ export class AnswerController {
             if (isNaN(aid)) {
                 throw Error('Invalid answer id');
             }
-            this.service.addReputationToAnswer(aid, -1, user);
+            await this.service.addReputationToAnswer(aid, -1, user);
             ResponseHandler.sendSuccessJson(resp, null);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
