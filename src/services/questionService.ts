@@ -2,6 +2,8 @@ import { AnswerRepository } from './../repositories/answerRepository';
 import { Question } from '../entities/question';
 import { getConnection, getManager } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
+import UserAuth from '../models/UserAuth';
+import { UserService } from './userService';
 import { Answer } from '../entities/answer';
 import { AnswerReputationPointRepository } from '../repositories/answerReputationPointRepository';
 
@@ -10,9 +12,11 @@ export class QuestionService {
     private questionRepository: QuestionRepository;
     private answerRepository: AnswerRepository;
     private answerReputationPointRepository: AnswerReputationPointRepository;
+    private userService: UserService;
 
     private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
+        this.userService = UserService.getInstance();
         this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
         this.answerReputationPointRepository = getConnection()
             .getCustomRepository(AnswerReputationPointRepository);
@@ -69,9 +73,10 @@ export class QuestionService {
 
     }
 
-    public async createNewQuestion(question: Question): Promise<Question> {
+    public async createNewQuestion(question: Question, user: UserAuth): Promise<Question> {
         console.log('Question - ', question);
         try {
+            question.user = await this.userService.findUserForId(user.id);
             return await this.questionRepository.save(question);
         } catch (e) {
             console.error(e);
@@ -79,29 +84,42 @@ export class QuestionService {
         }
     }
 
-    public async updateQuestion(qId: number, question: Question): Promise<Question> {
-        console.log('Updating - ', qId);
-        try {
-            if (await this.questionRepository.findOne(qId) === undefined) {
-                throw new Error('Entity does not exist');
-            }
-            question.id = qId;
-            return await this.questionRepository.save(question);
-        } catch (e) {
-            console.error(e);
-            throw (e);
+    public async updateQuestion(qId: number, question: Question, user: UserAuth): Promise<Question> {
+        let oldQuestion: Question | undefined = await this.questionRepository.findOne(qId, {
+            relations: ['user']
+        });
+        if (oldQuestion === undefined) {
+            throw new Error('Entity does not exist');
         }
+
+        // Making sure OP is correct
+        let oldUser = oldQuestion.user;
+        if (!user.isAdmin && oldUser.id !== user.id) {
+            throw new Error('Unauthorized user cannot modify the question!');
+        }
+
+        // TODO: Add edited by users list too (edit can happen from OP and admin)
+        question.id = qId;
+        question.user = oldUser;
+
+        return await this.questionRepository.save(question);
     }
 
-    public async deleteQuestion(questionId: number): Promise<number> {
+    public async deleteQuestion(questionId: number, user: UserAuth): Promise<number> {
         console.log('Deleting - ', questionId);
-        try {
-            const res = await this.questionRepository.delete(questionId);
-            return Number(res.affected);
-        } catch (e) {
-            console.error(e);
-            throw (e);
+        if (!user.isAdmin) {
+            let question: Question = await this.questionRepository.findOneOrFail(
+                {id: questionId},
+                {relations: ['user']}
+            );
+
+            if (user.id !== question.user.id) {
+                throw new Error('Unauthorized user cannot delete the question!');
+            }
         }
+
+        const res = await this.questionRepository.delete(questionId);
+        return Number(res.affected);
     }
 
     private async getAnswerReputation(answerId: number): Promise<number> {

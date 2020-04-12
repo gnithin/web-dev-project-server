@@ -3,6 +3,8 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 't
 import { Question } from './question';
 import { Answer } from './answer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import {Utils} from '../common/utils';
+
 
 @Entity({name: 'users'})
 export class User {
@@ -33,4 +35,8 @@ export class User {
 
     @Column({default: false})
     isAdmin: boolean;
+
+    toJSON() {
+        return Utils.createObjWithoutKeys(this, ["passwordHash"]);
+    }
 }
