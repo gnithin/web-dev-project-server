@@ -5,7 +5,6 @@ import { UserController } from './controllers/userController';
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 import { QuestionController } from './controllers/questionController';
-import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import { AnswerController } from './controllers/answerController';
 import * as passport from 'passport';
@@ -13,6 +12,7 @@ import authConstants from './constants/auth';
 import UserAuth from './models/UserAuth';
 import { Session } from './entities/session';
 import { TypeormStore } from 'connect-typeorm';
+import { Request, Response } from 'express';
 import session = require('express-session');
 import cookieParser = require('cookie-parser');
 
@@ -36,16 +36,6 @@ passport.deserializeUser<UserAuth, string>((userData: string, done) => {
     done(null, user);
 });
 
-
-// Setup cors
-const corsOptions = {
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
-    credentials: true,
-    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: '*',
-    preflightContinue: true,
-};
-
 // Setup session options
 const sessionOptions = {
     secret: authConstants.SESSION_SECRET,
@@ -56,9 +46,7 @@ const sessionOptions = {
 // Setup controllers
 class ChowkServer extends Server {
     constructor(sessionStore: any) {
-        // super(process.env.NODE_ENV === 'development');
         super(false);
-        this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(session({
@@ -69,7 +57,21 @@ class ChowkServer extends Server {
         this.app.use(passport.session());
 
         // Support preflight throughout the app
-        this.app.options('*', cors());
+        this.app.use((req: Request, res: Response, next) => {
+            let origin: string = req.headers.origin as string;
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Headers',
+                'Origin,X-Requested-With,Content-Type,Accept,X-Access-Token');
+            res.setHeader('Access-Control-Allow-Methods',
+                'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE');
+            next();
+        });
+
+        // Return preflight response
+        this.app.options('*', (req, res) => {
+            res.status(200).send()
+        });
 
         super.addControllers(
             [
