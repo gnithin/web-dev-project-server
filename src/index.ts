@@ -43,7 +43,7 @@ const corsOptions = {
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
     origin: '*',
-    preflightContinue: false,
+    preflightContinue: true,
 };
 
 // Setup session options
@@ -67,6 +67,9 @@ class ChowkServer extends Server {
         }));
         this.app.use(passport.initialize());
         this.app.use(passport.session());
+
+        // Support preflight throughout the app
+        this.app.options('*', cors());
 
         super.addControllers(
             [
