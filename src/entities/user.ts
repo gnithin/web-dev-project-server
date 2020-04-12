@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { AnswerReputationPoint } from './answerReputationPoint';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { Question } from './question';
 import { Answer } from './answer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
@@ -25,6 +26,10 @@ export class User {
 
     @OneToMany(type => Answer, answer => answer.user)
     answers: Answer[];
+
+    @OneToMany(type => AnswerReputationPoint, reputationPoint => reputationPoint.srcUser)
+    @JoinColumn({name: 'given_reputations'})
+    givenReputations: AnswerReputationPoint[];
 
     @Column({default: false})
     isAdmin: boolean;
