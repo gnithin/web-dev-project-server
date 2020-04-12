@@ -22,6 +22,7 @@ export class AnswerController {
     }
 
     @Put(':aid')
+    @Middleware(UserAuthMiddleware)
     private async updateAnswer(req: Request, resp: Response) {
         const aid: number = parseInt(req.params.aid, 10);
         if (isNaN(aid)) {
@@ -48,7 +49,8 @@ export class AnswerController {
         }
 
         try {
-            const answer: Answer = await this.service.updateAnswerForId(aid, reqAnswer)
+            let user: UserAuth = (req.user as UserAuth);
+            const answer: Answer = await this.service.updateAnswerForId(aid, reqAnswer, user);
             ResponseHandler.sendSuccessJson(resp, answer);
 
         } catch (e) {
@@ -57,6 +59,7 @@ export class AnswerController {
     }
 
     @Delete(':aid')
+    @Middleware(UserAuthMiddleware)
     private async deleteAnswer(req: Request, resp: Response) {
         try {
             const aid: number = parseInt(req.params.aid, 10);
@@ -64,7 +67,8 @@ export class AnswerController {
                 throw Error('Invalid answer id');
             }
 
-            await this.service.deleteAnswerForId(aid);
+            let user:UserAuth = (req.user as UserAuth);
+            await this.service.deleteAnswerForId(aid, user);
             ResponseHandler.sendSuccessJson(resp, null);
 
         } catch (e) {
@@ -115,7 +119,7 @@ export class AnswerController {
             if (isNaN(aid)) {
                 throw Error('Invalid answer id');
             }
-            this.service.deleteReputationVote(aid, userAuth.id);
+            await this.service.deleteReputationVote(aid, userAuth.id);
             ResponseHandler.sendSuccessJson(resp, null);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);

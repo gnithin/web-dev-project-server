@@ -1,5 +1,5 @@
 import { AnswerService } from './../services/answerService';
-import { Controller, Delete, Get, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { QuestionService } from '../services/questionService';
 import { Question } from '../entities/question';
@@ -8,6 +8,7 @@ import { ResponseHandler } from '../common/ResponseHandler';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import ERROR_CODES from '../constants/errorCodes';
+import { UserAuthMiddleware } from '../common/auth/authMiddleware';
 import UserAuth from '../models/UserAuth';
 
 @Controller('api/questions')
@@ -46,6 +47,7 @@ export class QuestionController {
     }
 
     @Post()
+    @Middleware(UserAuthMiddleware)
     private async createNewQuestion(req: Request, resp: Response) {
         const question: Question = plainToClass(Question, req.body as Question);
         try{
@@ -61,7 +63,8 @@ export class QuestionController {
         }
 
         try {
-            const newQuestion = await this.service.createNewQuestion(question);
+            let user: UserAuth = req.user as UserAuth;
+            const newQuestion = await this.service.createNewQuestion(question, user);
             ResponseHandler.sendSuccessJson(resp, newQuestion);
         } catch (e) {
             console.error(e);
@@ -70,6 +73,7 @@ export class QuestionController {
     }
 
     @Put(':questionId')
+    @Middleware(UserAuthMiddleware)
     private async updateQuestion(req: Request, resp: Response) {
         const qId = parseInt(req.params.questionId, 10);
         if (isNaN(qId)) {
@@ -95,7 +99,8 @@ export class QuestionController {
         }
 
         try {
-            const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question);
+            let user: UserAuth = req.user as UserAuth;
+            const updatedQuestion = await this.service.updateQuestion(qId, req.body as Question, user);
             ResponseHandler.sendSuccessJson(resp, updatedQuestion);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -103,14 +108,18 @@ export class QuestionController {
     }
 
     @Delete(':questionId')
+    @Middleware(UserAuthMiddleware)
     private async deleteQuestion(req: Request, resp: Response) {
         try {
             const qId = parseInt(req.params.questionId, 10);
             if (isNaN(qId)) {
                 throw new Error('Invalid question ID. Expecting a number.');
             }
+
+
+            let user: UserAuth = req.user as UserAuth;
             const serviceResponse = await this.service
-                .deleteQuestion(qId);
+                .deleteQuestion(qId, user);
             ResponseHandler.sendSuccessJson(resp, { affected: serviceResponse });
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -166,7 +175,8 @@ export class QuestionController {
         }
 
         try {
-            const answer: Answer = await this.answerService.createAnswerForQuestion(reqAnswer, qid);
+            let user: UserAuth = req.user as UserAuth;
+            const answer: Answer = await this.answerService.createAnswerForQuestion(reqAnswer, qid, user);
             ResponseHandler.sendSuccessJson(resp, answer);
 
         } catch (e) {
