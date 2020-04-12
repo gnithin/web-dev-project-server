@@ -72,7 +72,7 @@ export class AnswerController {
         }
     }
 
-    @Post(':aid/upvote')
+    @Put(':aid/upvote')
     @Middleware(UserAuthMiddleware)
     private async upvoteAnswer(req: Request, resp: Response) {
         const userAuth: UserAuth = req.user as UserAuth;
@@ -89,7 +89,7 @@ export class AnswerController {
         }
     }
 
-    @Post(':aid/downvote')
+    @Put(':aid/downvote')
     @Middleware(UserAuthMiddleware)
     private async downvoteAnswer(req: Request, resp: Response) {
         const userAuth: UserAuth = req.user as UserAuth;
