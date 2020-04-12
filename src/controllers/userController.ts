@@ -13,6 +13,7 @@ import { UserResponse } from '../models/UserResponse';
 import { UserLoginRequest } from '../models/userLoginRequest';
 import UserAuth from '../models/UserAuth';
 import { UserDetailsResponse } from '../models/userDetailsResponse';
+import { UserPublicDetailsResponse } from '../models/userPublicDetailsResponse';
 
 const bcrypt = require('bcrypt');
 
@@ -147,6 +148,29 @@ export class UserController {
         let user: User = await this.userService.findUserDetailsForId(userAuth.id);
         let userDetails: UserDetailsResponse = plainToClass(UserDetailsResponse, user as UserDetailsResponse);
         return ResponseHandler.sendSuccessJson(resp, userDetails);
+    }
+
+    @Get('details/:uid')
+    private async getUserPublicDetails(req: Request, resp: Response) {
+        let userIdStr = req.params.uid;
+        if (isNaN(parseInt(userIdStr))) {
+            ResponseHandler.sendErrorJson(resp, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        let userId = parseInt(userIdStr);
+        try {
+            let user = await this.userService.findUserDetailsForId(userId);
+            ResponseHandler.sendSuccessJson(
+                resp,
+                plainToClass(UserPublicDetailsResponse, user as UserPublicDetailsResponse)
+            );
+            return;
+
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
     }
 
     @Get('all')
