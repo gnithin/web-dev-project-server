@@ -13,7 +13,10 @@ export class QuestionReputationPoint {
     @Column({ type: 'integer' })
     score: number;
 
-    @ManyToOne(() => Question, question => question.reputations)
+    @ManyToOne(() => Question, question => question.reputations, {
+        onDelete: 'CASCADE'
+    })
+    
     @JoinColumn({name: 'target_question'})
     targetQuestion: Question;
 
