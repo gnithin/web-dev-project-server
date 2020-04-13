@@ -59,6 +59,10 @@ class ChowkServer extends Server {
         // Support preflight throughout the app
         this.app.use((req: Request, res: Response, next) => {
             let origin: string = req.headers.origin as string;
+            if (!origin) {
+                origin = '*';
+            }
+           
             res.setHeader('Access-Control-Allow-Origin', origin);
             res.setHeader('Access-Control-Allow-Credentials', 'true');
             res.setHeader('Access-Control-Allow-Headers',
