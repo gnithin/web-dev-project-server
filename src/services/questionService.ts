@@ -42,11 +42,7 @@ export class QuestionService {
                 relations: ['user']
             });
             for (const question of questions) {
-                question.totalReputation = await this.getQuestionReputation(question.id);
-                const point = await this.questionReputationPointRepository.findOne({
-                    where: { srcUser: { id: srcUserId }, targetQuestion: { id: question.id } }
-                });
-                question.currentUserVote = point?.score;    
+                question.totalReputation = await this.getQuestionReputation(question.id); 
             }
             return questions;
         } catch (e) {
