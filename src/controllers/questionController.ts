@@ -149,6 +149,7 @@ export class QuestionController {
     }
 
     @Post(':qid/answers')
+    @Middleware(UserAuthMiddleware)
     private async createAnswerForQuestion(req: Request, resp: Response) {
         const qid: number = parseInt(req.params.qid, 10);
         if (isNaN(qid)) {
