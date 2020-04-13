@@ -223,4 +223,20 @@ export class QuestionController {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
     }
+
+    @Delete(':qId/votes')
+    @Middleware(UserAuthMiddleware)
+    private async deleteVote(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        try {
+            const qId: number = parseInt(req.params.qId, 10);
+            if (isNaN(qId)) {
+                throw Error('Invalid question id');
+            }
+            await this.service.deleteReputationVote(qId, userAuth.id);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
 }

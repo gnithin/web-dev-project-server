@@ -187,4 +187,14 @@ export class QuestionService {
         return reps.sum | 0;
     }
 
+    public async deleteReputationVote(qId: number, srcUserId: number) {
+        await getManager()
+            .createQueryBuilder()
+            .delete()
+            .from(QuestionReputationPoint)
+            .where('targetQuestion = :qId', { qId })
+            .andWhere('srcUser = :uid', { uid: srcUserId })
+            .execute();
+    }
+
 }
