@@ -41,6 +41,8 @@ export class User {
     @Column({default: false})
     isAdmin: boolean;
 
+    totalReputation: number;
+    
     toJSON() {
         return Utils.createObjWithoutKeys(this, ["passwordHash"]);
     }

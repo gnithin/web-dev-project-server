@@ -38,9 +38,11 @@ export class UserService {
     }
 
     public async findUserDetailsForId(id: number): Promise<User> {
-       return await this.userRepository.findOneOrFail(id, {
-           relations: ["questions", "answers"]
-       })
+        const user = await this.userRepository.findOneOrFail(id, {
+            relations: ["questions", "answers"]
+        });
+        user.totalReputation = await this.getReputation(id);
+        return user;
     }
 
     public async getReputation(userId: number): Promise<number> {
@@ -49,13 +51,13 @@ export class UserService {
 
         return questionRep + answerRep;
     }
-    
+
     private async getQuestionReputation(userId: number): Promise<number> {
         const result = await getManager()
             .createQueryBuilder(QuestionReputationPoint, 'point')
             .innerJoin('point.targetQuestion', 'question')
             .innerJoin('question.user', 'user')
-            .where('user.id = :id', {id: userId})
+            .where('user.id = :id', { id: userId })
             .select('SUM(point.score)', 'sum')
             .getRawOne();
 
@@ -68,7 +70,7 @@ export class UserService {
             .createQueryBuilder(AnswerReputationPoint, 'point')
             .innerJoin('point.targetAnswer', 'answer')
             .innerJoin('answer.user', 'user')
-            .where('user.id = :id', {id: userId})
+            .where('user.id = :id', { id: userId })
             .select('SUM(point.score)', 'sum')
             .getRawOne();
 
