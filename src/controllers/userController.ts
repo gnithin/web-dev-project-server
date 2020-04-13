@@ -184,4 +184,20 @@ export class UserController {
         // TODO:
         return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
     }
+
+    @Get(':userId/reputation')
+    private async getUserReputation(req: Request, res: Response) {
+        let userId = parseInt(req.params.userId);
+        
+        if (isNaN(userId)) {
+            ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+        try {
+            const questionReputation = await this.userService.getReputation(userId);
+            ResponseHandler.sendSuccessJson(res, questionReputation);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(res, e.message);
+        }
+    }
 }

@@ -1,5 +1,7 @@
+import { AnswerReputationPoint } from './../entities/answerReputationPoint';
+import { QuestionReputationPoint } from './../entities/questionReputationPoint';
 import { UserRepository } from '../repositories/userRepository';
-import { getConnection } from 'typeorm';
+import { getConnection, getManager } from 'typeorm';
 import { User } from '../entities/user';
 
 const crypto = require('crypto');
@@ -39,5 +41,37 @@ export class UserService {
        return await this.userRepository.findOneOrFail(id, {
            relations: ["questions", "answers"]
        })
+    }
+
+    public async getReputation(userId: number): Promise<number> {
+        const questionRep = await this.getQuestionReputation(userId);
+        const answerRep = await this.getAnswerReputation(userId);
+
+        return questionRep + answerRep;
+    }
+    
+    private async getQuestionReputation(userId: number): Promise<number> {
+        const result = await getManager()
+            .createQueryBuilder(QuestionReputationPoint, 'point')
+            .innerJoin('point.targetQuestion', 'question')
+            .innerJoin('question.user', 'user')
+            .where('user.id = :id', {id: userId})
+            .select('SUM(point.score)', 'sum')
+            .getRawOne();
+
+
+        return result.sum | 0;
+    }
+
+    private async getAnswerReputation(userId: number): Promise<number> {
+        const result = await getManager()
+            .createQueryBuilder(AnswerReputationPoint, 'point')
+            .innerJoin('point.targetAnswer', 'answer')
+            .innerJoin('answer.user', 'user')
+            .where('user.id = :id', {id: userId})
+            .select('SUM(point.score)', 'sum')
+            .getRawOne();
+
+        return result.sum | 0;
     }
 }
