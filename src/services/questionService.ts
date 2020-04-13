@@ -43,6 +43,9 @@ export class QuestionService {
             });
             for (const question of questions) {
                 question.totalReputation = await this.getQuestionReputation(question.id); 
+                question.answersCount = await this.answerRepository.count({
+                    where: { question: { id: question.id } }
+                });
             }
             return questions;
         } catch (e) {
