@@ -141,6 +141,12 @@ export class UserController {
         return user;
     }
 
+    @Get('current')
+    @Middleware(UserAuthMiddleware)
+    private getCurrentLoggedInUser(req: Request, resp: Response) {
+        return ResponseHandler.sendSuccessJson(resp, plainToClass(UserAuth, req.user as UserAuth));
+    }
+
     @Get('details')
     @Middleware(UserAuthMiddleware)
     private async getUserDetails(req: Request, resp: Response) {
@@ -163,7 +169,7 @@ export class UserController {
             let user = await this.userService.findUserDetailsForId(userId);
             let userAuth: UserAuth = req.user as UserAuth;
             let userResponse;
-            if(userAuth && userAuth.id === userId) {
+            if (userAuth && userAuth.id === userId) {
                 userResponse = plainToClass(UserDetailsResponse, user as UserDetailsResponse);
             } else {
                 userResponse = plainToClass(UserPublicDetailsResponse, user as UserPublicDetailsResponse)
@@ -188,7 +194,7 @@ export class UserController {
     @Get(':userId/reputation')
     private async getUserReputation(req: Request, res: Response) {
         let userId = parseInt(req.params.userId);
-        
+
         if (isNaN(userId)) {
             ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
             return;
