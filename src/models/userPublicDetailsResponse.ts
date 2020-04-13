@@ -18,4 +18,7 @@ export class UserPublicDetailsResponse {
 
     @Expose()
     isAdmin: boolean;
+
+    @Expose()
+    totalReputation: number;
 }

@@ -1,3 +1,5 @@
+import { UserService } from './../services/userService';
+import { User } from './../entities/user';
 import { AnswerService } from './../services/answerService';
 import { Controller, Delete, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
@@ -15,16 +17,19 @@ import UserAuth from '../models/UserAuth';
 export class QuestionController {
     private service: QuestionService;
     private answerService: AnswerService;
+    private userService: UserService;
 
     constructor() {
         this.service = QuestionService.getInstance();
         this.answerService = AnswerService.getInstance();
+        this.userService = UserService.getInstance();
     }
 
     @Get()
     private async getAllQuestions(req: Request, resp: Response) {
         try {
-            const questions: Question[] = await this.service.getAllQuestions();
+            let user: UserAuth = req.user as UserAuth;
+            const questions: Question[] = await this.service.getAllQuestions(user?.id);
             ResponseHandler.sendSuccessJson(resp, questions);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -185,4 +190,53 @@ export class QuestionController {
         }
     }
 
+    @Put(':qId/upvote')
+    @Middleware(UserAuthMiddleware)
+    private async upvoteAnswer(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        const user: User = await this.userService.findUserForId(userAuth.id);
+        try {
+            const qId: number = parseInt(req.params.qId, 10);
+            if (isNaN(qId)) {
+                throw Error('Invalid question id');
+            }
+            await this.service.addReputationToQuestion(qId, 1, user);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Put(':qId/downvote')
+    @Middleware(UserAuthMiddleware)
+    private async downvoteAnswer(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        const user: User = await this.userService.findUserForId(userAuth.id);
+        try {
+            const qId: number = parseInt(req.params.qId, 10);
+            if (isNaN(qId)) {
+                throw Error('Invalid question id');
+            }
+            await this.service.addReputationToQuestion(qId, -1, user);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
+
+    @Delete(':qId/votes')
+    @Middleware(UserAuthMiddleware)
+    private async deleteVote(req: Request, resp: Response) {
+        const userAuth: UserAuth = req.user as UserAuth;
+        try {
+            const qId: number = parseInt(req.params.qId, 10);
+            if (isNaN(qId)) {
+                throw Error('Invalid question id');
+            }
+            await this.service.deleteReputationVote(qId, userAuth.id);
+            ResponseHandler.sendSuccessJson(resp, null);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
+    }
 }

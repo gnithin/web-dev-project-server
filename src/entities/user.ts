@@ -1,3 +1,4 @@
+import { QuestionReputationPoint } from './questionReputationPoint';
 import { AnswerReputationPoint } from './answerReputationPoint';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { Question } from './question';
@@ -32,10 +33,16 @@ export class User {
     @OneToMany(type => AnswerReputationPoint, reputationPoint => reputationPoint.srcUser)
     @JoinColumn({name: 'given_reputations'})
     givenReputations: AnswerReputationPoint[];
+    
+    @OneToMany(type => QuestionReputationPoint, reputationPoint => reputationPoint.srcUser)
+    @JoinColumn({name: 'given_question_reputations'})
+    givenQuestionReputations: QuestionReputationPoint[];
 
     @Column({default: false})
     isAdmin: boolean;
 
+    totalReputation: number;
+    
     toJSON() {
         return Utils.createObjWithoutKeys(this, ["passwordHash"]);
     }

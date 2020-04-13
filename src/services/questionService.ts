@@ -1,3 +1,6 @@
+import { QuestionReputationPointRepository } from './../repositories/questionReputationPointRepository';
+import { QuestionReputationPoint } from './../entities/questionReputationPoint';
+import { User } from './../entities/user';
 import { AnswerRepository } from './../repositories/answerRepository';
 import { Question } from '../entities/question';
 import { getConnection, getManager } from 'typeorm';
@@ -12,12 +15,15 @@ export class QuestionService {
     private questionRepository: QuestionRepository;
     private answerRepository: AnswerRepository;
     private answerReputationPointRepository: AnswerReputationPointRepository;
+    private questionReputationPointRepository: QuestionReputationPointRepository;
     private userService: UserService;
 
     private constructor() {
         this.questionRepository = getConnection().getCustomRepository(QuestionRepository);
         this.userService = UserService.getInstance();
         this.answerRepository = getConnection().getCustomRepository(AnswerRepository);
+        this.questionReputationPointRepository = getConnection().getCustomRepository(QuestionReputationPointRepository);
+
         this.answerReputationPointRepository = getConnection()
             .getCustomRepository(AnswerReputationPointRepository);
     }
@@ -30,20 +36,28 @@ export class QuestionService {
     }
 
 
-    public async getAllQuestions(): Promise<Question[]> {
-        try {
-            return await this.questionRepository.find({
+    public async getAllQuestions(srcUserId?: number): Promise<Question[]> {
+        try {            
+            const questions = await this.questionRepository.find({
                 relations: ['user']
             });
+            for (const question of questions) {
+                question.totalReputation = await this.getQuestionReputation(question.id);
+                const point = await this.questionReputationPointRepository.findOne({
+                    where: { srcUser: { id: srcUserId }, targetQuestion: { id: question.id } }
+                });
+                question.currentUserVote = point?.score;    
+            }
+            return questions;
         } catch (e) {
             console.error(e);
             throw (e);
         }
     }
 
-    public async getAnswersForQuestion(qId: number, srcUserId?: number) : Promise<Answer[]> {
+    public async getAnswersForQuestion(qId: number, srcUserId?: number): Promise<Answer[]> {
         const answers = await this.answerRepository.find({
-            where: {question: {id: qId}}
+            where: { question: { id: qId } }
         });
 
         for (const answer of answers) {
@@ -54,7 +68,7 @@ export class QuestionService {
             });
             answer.currentUserVote = point?.score;
         }
-        
+
         return answers;
     }
     public async getQuestionById(qId: number, includeAnswers: boolean = true, srcUserId?: number): Promise<Question> {
@@ -62,6 +76,11 @@ export class QuestionService {
 
         try {
             const question = await this.questionRepository.findOneOrFail(qId, { relations });
+            question.totalReputation = await this.getQuestionReputation(qId);
+            const point = await this.questionReputationPointRepository.findOne({
+                where: { srcUser: { id: srcUserId }, targetQuestion: { id: qId } }
+            });
+            question.currentUserVote = point?.score;
             if (includeAnswers) {
                 question.answers = await this.getAnswersForQuestion(qId, srcUserId);
             }
@@ -108,12 +127,14 @@ export class QuestionService {
     public async deleteQuestion(questionId: number, user: UserAuth): Promise<number> {
         console.log('Deleting - ', questionId);
         if (!user.isAdmin) {
-            let question: Question = await this.questionRepository.findOneOrFail(
-                {id: questionId},
-                {relations: ['user']}
-            );
-
-            if (user.id !== question.user.id) {
+            let user = await getManager()
+            .createQueryBuilder(Question, 'question')
+            .leftJoin('question.user', 'user')
+            .select('user.id', 'id')
+            .whereInIds(questionId)
+            .getRawOne();
+                        
+            if (user.id !== user.id) {
                 throw new Error('Unauthorized user cannot delete the question!');
             }
         }
@@ -135,4 +156,45 @@ export class QuestionService {
         }
         return reps.sum;
     }
+
+    public async addReputationToQuestion(qId: number, score: number, srcUser: User) {
+        let point: QuestionReputationPoint | undefined;
+        point = await this.questionReputationPointRepository.findOne({
+            where: { srcUser: { id: srcUser.id }, targetQuestion: { id: qId } }
+        })
+        if (!point) {
+            point = new QuestionReputationPoint();
+        }
+        point.score = score;
+        point.srcUser = srcUser;
+        try {
+            point.targetQuestion = await this.getQuestionById(qId);
+            await this.questionReputationPointRepository.save(point);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+
+    private async getQuestionReputation(questionId: number): Promise<number> {
+        const reps = await getManager()
+            .createQueryBuilder(Question, 'question')
+            .leftJoin('question.reputations', 'reputation')
+            .select('SUM(reputation.score)', 'sum')
+            .whereInIds(questionId)
+            .getRawOne();
+
+        return reps.sum | 0;
+    }
+
+    public async deleteReputationVote(qId: number, srcUserId: number) {
+        await getManager()
+            .createQueryBuilder()
+            .delete()
+            .from(QuestionReputationPoint)
+            .where('targetQuestion = :qId', { qId })
+            .andWhere('srcUser = :uid', { uid: srcUserId })
+            .execute();
+    }
+
 }

@@ -1,11 +1,11 @@
-import { Answer } from './answer';
+import { Question } from './question';
 import { User } from './user';
 import { IsNotEmpty } from 'class-validator';
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn, Unique } from 'typeorm';
 
-@Entity({ name: 'reputation_points' })
-@Unique(['srcUser', 'targetAnswer'])
-export class AnswerReputationPoint {
+@Entity({ name: 'question_reputation_points' })
+@Unique(['srcUser', 'targetQuestion'])
+export class QuestionReputationPoint {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -13,15 +13,16 @@ export class AnswerReputationPoint {
     @Column({ type: 'integer' })
     score: number;
 
-    @ManyToOne(() => Answer, answer => answer.reputations, {
+    @ManyToOne(() => Question, question => question.reputations, {
         onDelete: 'CASCADE'
     })
     
-    @JoinColumn({name: 'target_answer'})
-    targetAnswer: Answer;
+    @JoinColumn({name: 'target_question'})
+    targetQuestion: Question;
 
     @ManyToOne(() => User, user => user.givenReputations)
     @JoinColumn({name: 'src_user'})
     srcUser: User;
+
 
 }
