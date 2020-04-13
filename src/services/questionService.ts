@@ -108,12 +108,11 @@ export class QuestionService {
     public async deleteQuestion(questionId: number, user: UserAuth): Promise<number> {
         console.log('Deleting - ', questionId);
         if (!user.isAdmin) {
-            let question: Question = await this.questionRepository.findOneOrFail(
-                {id: questionId},
-                {relations: ['user']}
-            );
-
-            if (user.id !== question.user.id) {
+            let question = await this.questionRepository.createQueryBuilder()
+            .whereInIds(questionId)
+            .getOne();
+            
+            if (user.id !== question?.user.id) {
                 throw new Error('Unauthorized user cannot delete the question!');
             }
         }

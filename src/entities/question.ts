@@ -1,3 +1,4 @@
+import { QuestionReputationPoint } from './questionReputationPoint';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Answer } from './answer';
 import { User } from './user';
@@ -23,4 +24,11 @@ export class Question {
 
     @ManyToOne(type => User, user => user.questions)
     user: User;
+
+    @OneToMany(type => QuestionReputationPoint, reputationPoint => reputationPoint.targetQuestion)
+    reputations: QuestionReputationPoint[]
+
+    totalReputation: number
+
+    [key: string]: any;
 }
