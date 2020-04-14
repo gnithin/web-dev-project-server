@@ -76,7 +76,8 @@ export class QuestionService {
             take: limit,
             order: {
                 createdTimestamp: 'DESC'
-            }
+            },
+            relations: ['user']
         });
 
         for (const answer of answers) {
