@@ -24,4 +24,7 @@ export class UserDetailsResponse {
 
     @Expose()
     totalReputation: number;
+
+    @Expose()
+    createdTimestamp: Date;
 }

@@ -42,7 +42,15 @@ export class User {
     isAdmin: boolean;
 
     totalReputation: number;
-    
+
+    @Column(
+        {
+            // NOTE: This is for clean migration. Not ideal, but works
+            nullable: true
+        }
+    )
+    createdTimestamp: Date;
+
     toJSON() {
         return Utils.createObjWithoutKeys(this, ["passwordHash"]);
     }

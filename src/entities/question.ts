@@ -26,9 +26,17 @@ export class Question {
     user: User;
 
     @OneToMany(type => QuestionReputationPoint, reputationPoint => reputationPoint.targetQuestion)
-    reputations: QuestionReputationPoint[]
+    reputations: QuestionReputationPoint[];
 
-    totalReputation: number
+    totalReputation: number;
+
+    @Column(
+        {
+            // NOTE: This is for clean migration. Not ideal, but works
+            nullable: true
+        }
+    )
+    createdTimestamp: Date;
 
     [key: string]: any;
 }

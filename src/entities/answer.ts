@@ -26,5 +26,13 @@ export class Answer {
 
     totalReputation: number
 
+    @Column(
+        {
+            // NOTE: This is for clean migration. Not ideal, but works
+            nullable: true
+        }
+    )
+    createdTimestamp: Date;
+
     [key: string]: any;
 }
