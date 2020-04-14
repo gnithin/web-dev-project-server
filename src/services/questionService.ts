@@ -48,7 +48,7 @@ export class QuestionService {
                 skip: offset,
                 take: limit,
                 order: {
-                    id: "DESC", // TODO: This needs to be date-wise
+                    createdTimestamp: "DESC",
                 }
             });
             for (const question of questions) {
@@ -74,6 +74,9 @@ export class QuestionService {
             where: { question: { id: qId } },
             skip: offset,
             take: limit,
+            order: {
+                createdTimestamp: 'DESC'
+            }
         });
 
         for (const answer of answers) {
