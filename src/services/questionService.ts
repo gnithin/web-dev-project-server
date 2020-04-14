@@ -112,6 +112,7 @@ export class QuestionService {
         console.log('Question - ', question);
         try {
             question.user = await this.userService.findUserForId(user.id);
+            question.createdTimestamp = new Date();
             return await this.questionRepository.save(question);
         } catch (e) {
             console.error(e);

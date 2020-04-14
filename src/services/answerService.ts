@@ -33,6 +33,7 @@ export class AnswerService {
 
     public async createAnswerForQuestion(answer: Answer, qid: number, user: UserAuth): Promise<Answer> {
         answer.user = await this.userService.findUserForId(user.id);
+        answer.createdTimestamp = new Date();
         answer.question = await this.questionService.getQuestionById(qid, false);
         return await this.answerRepository.save(answer);
     }
