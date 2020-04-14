@@ -47,6 +47,9 @@ export class QuestionService {
                 relations: ['user'],
                 skip: offset,
                 take: limit,
+                order: {
+                    id: "DESC", // TODO: This needs to be date-wise
+                }
             });
             for (const question of questions) {
                 question.totalReputation = await this.getQuestionReputation(question.id); 
