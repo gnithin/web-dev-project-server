@@ -35,6 +35,8 @@ export class AnswerService {
         answer.user = await this.userService.findUserForId(user.id);
         answer.createdTimestamp = new Date();
         answer.question = await this.questionService.getQuestionById(qid, false);
+        const newAnswer = await this.answerRepository.save(answer);
+        newAnswer.totalReputation = 0;
         return await this.answerRepository.save(answer);
     }
 
