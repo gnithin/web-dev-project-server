@@ -29,7 +29,11 @@ export class QuestionController {
     private async getAllQuestions(req: Request, resp: Response) {
         try {
             let user: UserAuth = req.user as UserAuth;
-            const questions: Question[] = await this.service.getAllQuestions(user?.id);
+            const questions: Question[] = await this.service.getAllQuestions(
+                user?.id,
+                req.query.limit,
+                req.query.offset,
+            );
             ResponseHandler.sendSuccessJson(resp, questions);
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
@@ -145,7 +149,12 @@ export class QuestionController {
             return;
         }
         try {
-            const answers = await this.service.getAnswersForQuestion(qid, userAuth?.id);
+            const answers = await this.service.getAnswersForQuestion(
+                qid,
+                userAuth?.id,
+                req.query.limit,
+                req.query.offset,
+            );
             ResponseHandler.sendSuccessJson(resp, answers);
 
         } catch (e) {
