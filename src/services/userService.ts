@@ -22,6 +22,7 @@ export class UserService {
     }
 
     public async registerUser(user: User): Promise<User> {
+        user.createdTimestamp = new Date();
         return await this.userRepository.save(user);
     }
 
