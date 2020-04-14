@@ -9,6 +9,7 @@ import UserAuth from '../models/UserAuth';
 import { UserService } from './userService';
 import { Answer } from '../entities/answer';
 import { AnswerReputationPointRepository } from '../repositories/answerReputationPointRepository';
+import { CONTROLLER_CONSTANTS } from '../constants/controller';
 
 export class QuestionService {
     private static instance: QuestionService;
@@ -36,10 +37,16 @@ export class QuestionService {
     }
 
 
-    public async getAllQuestions(srcUserId?: number): Promise<Question[]> {
-        try {            
+    public async getAllQuestions(
+        srcUserId?: number,
+        limit=CONTROLLER_CONSTANTS.DEFAULT_LIMIT,
+        offset=CONTROLLER_CONSTANTS.DEFAULT_OFFSET,
+    ): Promise<Question[]> {
+        try {
             const questions = await this.questionRepository.find({
-                relations: ['user']
+                relations: ['user'],
+                skip: offset,
+                take: limit,
             });
             for (const question of questions) {
                 question.totalReputation = await this.getQuestionReputation(question.id); 
@@ -54,9 +61,16 @@ export class QuestionService {
         }
     }
 
-    public async getAnswersForQuestion(qId: number, srcUserId?: number): Promise<Answer[]> {
+    public async getAnswersForQuestion(
+        qId: number,
+        srcUserId?: number,
+        limit=CONTROLLER_CONSTANTS.DEFAULT_LIMIT,
+        offset=CONTROLLER_CONSTANTS.DEFAULT_OFFSET,
+    ): Promise<Answer[]> {
         const answers = await this.answerRepository.find({
-            where: { question: { id: qId } }
+            where: { question: { id: qId } },
+            skip: offset,
+            take: limit,
         });
 
         for (const answer of answers) {
