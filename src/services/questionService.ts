@@ -74,9 +74,6 @@ export class QuestionService {
             where: { question: { id: qId } },
             skip: offset,
             take: limit,
-            order: {
-                createdTimestamp: 'DESC'
-            },
             relations: ['user']
         });
 
@@ -89,6 +86,7 @@ export class QuestionService {
             answer.currentUserVote = point?.score;
         }
 
+        answers.sort((a, b) => b.totalReputation - a.totalReputation);
         return answers;
     }
     public async getQuestionById(qId: number, includeAnswers: boolean = true, srcUserId?: number): Promise<Question> {
