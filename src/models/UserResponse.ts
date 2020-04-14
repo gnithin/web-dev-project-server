@@ -13,4 +13,7 @@ export class UserResponse {
 
     @Expose()
     isAdmin: boolean;
+
+    @Expose()
+    createdTimestamp: Date;
 }
