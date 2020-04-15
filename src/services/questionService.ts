@@ -83,7 +83,11 @@ export class QuestionService {
             const point = await this.answerReputationPointRepository.findOne({
                 where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
             });
-            answer.currentUserVote = point?.score;
+            if(point) {
+                answer.currentUserVote = point.score;
+            } else {
+                answer.currentUserVote = 0;
+            }
         }
 
         answers.sort((a, b) => b.totalReputation - a.totalReputation);
