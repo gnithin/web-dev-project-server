@@ -40,7 +40,7 @@ export class UserService {
 
     public async findUserDetailsForId(id: number): Promise<User> {
         const user = await this.userRepository.findOneOrFail(id, {
-            relations: ["questions", "answers"]
+            relations: ['questions', 'answers', 'answers.question']
         });
         user.totalReputation = await this.getReputation(id);
         return user;
