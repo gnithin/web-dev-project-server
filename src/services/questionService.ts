@@ -74,9 +74,7 @@ export class QuestionService {
             where: { question: { id: qId } },
             skip: offset,
             take: limit,
-            order: {
-                createdTimestamp: 'DESC'
-            }
+            relations: ['user']
         });
 
         for (const answer of answers) {
@@ -85,9 +83,14 @@ export class QuestionService {
             const point = await this.answerReputationPointRepository.findOne({
                 where: { srcUser: { id: srcUserId }, targetAnswer: { id: answer.id } }
             });
-            answer.currentUserVote = point?.score;
+            if(point) {
+                answer.currentUserVote = point.score;
+            } else {
+                answer.currentUserVote = 0;
+            }
         }
 
+        answers.sort((a, b) => b.totalReputation - a.totalReputation);
         return answers;
     }
     public async getQuestionById(qId: number, includeAnswers: boolean = true, srcUserId?: number): Promise<Question> {
