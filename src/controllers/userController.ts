@@ -1,4 +1,4 @@
-import { Controller, Get, Middleware, Post } from '@overnightjs/core';
+import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { AdminUserAuthMiddleware, UserAuthMiddleware } from '../common/auth/authMiddleware';
 import authConstants from '../constants/auth';
@@ -184,13 +184,6 @@ export class UserController {
         }
     }
 
-    @Get('all')
-    @Middleware(AdminUserAuthMiddleware)
-    private getAllUsers(req: Request, resp: Response) {
-        // TODO:
-        return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
-    }
-
     @Get(':userId/reputation')
     private async getUserReputation(req: Request, res: Response) {
         let userId = parseInt(req.params.userId);
@@ -201,6 +194,49 @@ export class UserController {
         }
         try {
             const questionReputation = await this.userService.getReputation(userId);
+            ResponseHandler.sendSuccessJson(res, questionReputation);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(res, e.message);
+        }
+    }
+
+    @Get('all')
+    @Middleware(AdminUserAuthMiddleware)
+    private getAllUsers(req: Request, resp: Response) {
+        // TODO:
+        return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
+    }
+
+    @Put('set/admin/:userId')
+    @Middleware(AdminUserAuthMiddleware)
+    private async setAdmin(req: Request, res: Response) {
+        let userId = parseInt(req.params.userId);
+
+        if (isNaN(userId)) {
+            ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        try {
+            const questionReputation = await this.userService.setAdmin(userId);
+            ResponseHandler.sendSuccessJson(res, questionReputation);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(res, e.message);
+        }
+    }
+
+    @Put('unset/admin/:userId')
+    @Middleware(AdminUserAuthMiddleware)
+    private async unsetAdmin(req: Request, res: Response) {
+        let userId = parseInt(req.params.userId);
+
+        if (isNaN(userId)) {
+            ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        try {
+            const questionReputation = await this.userService.unsetAdmin(userId);
             ResponseHandler.sendSuccessJson(res, questionReputation);
         } catch (e) {
             ResponseHandler.sendErrorJson(res, e.message);

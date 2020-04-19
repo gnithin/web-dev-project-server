@@ -77,4 +77,24 @@ export class UserService {
 
         return result.sum | 0;
     }
+
+    public async setAdmin(userId:number) {
+        let userEntry = await this.userRepository.findOneOrFail(userId);
+        if(userEntry.isAdmin) {
+            // User is already an admin
+            return;
+        }
+        userEntry.isAdmin = true;
+        await this.userRepository.save(userEntry);
+    }
+
+    public async unsetAdmin(userId:number) {
+        let userEntry = await this.userRepository.findOneOrFail(userId);
+        if(!userEntry.isAdmin) {
+            // User is already an admin
+            return;
+        }
+        userEntry.isAdmin = false;
+        await this.userRepository.save(userEntry);
+    }
 }
