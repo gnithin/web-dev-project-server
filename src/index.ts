@@ -52,6 +52,10 @@ class ChowkServer extends Server {
         this.app.use(session({
             ...sessionOptions,
             store: sessionStore,
+            cookie: {
+                secure: true,
+                sameSite: 'none',
+            }
         }));
         this.app.use(passport.initialize());
         this.app.use(passport.session());
