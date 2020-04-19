@@ -202,9 +202,13 @@ export class UserController {
 
     @Get('all')
     @Middleware(AdminUserAuthMiddleware)
-    private getAllUsers(req: Request, resp: Response) {
-        // TODO:
-        return ResponseHandler.sendSuccessJson(resp, {todo: 'all-user-details'});
+    private async getAllUsers(req: Request, resp: Response) {
+        try {
+            const users = await this.userService.getAllUsers();
+            ResponseHandler.sendSuccessJson(resp, users);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(resp, e.message);
+        }
     }
 
     @Put('set/admin/:userId')
