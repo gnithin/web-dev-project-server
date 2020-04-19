@@ -102,7 +102,11 @@ export class QuestionService {
             const point = await this.questionReputationPointRepository.findOne({
                 where: { srcUser: { id: srcUserId }, targetQuestion: { id: qId } }
             });
-            question.currentUserVote = point?.score;
+            if(point) {
+                question.currentUserVote = point.score;
+            } else {
+                question.currentUserVote = 0;
+            }
             if (includeAnswers) {
                 question.answers = await this.getAnswersForQuestion(qId, srcUserId);
             }
@@ -119,6 +123,8 @@ export class QuestionService {
         try {
             question.user = await this.userService.findUserForId(user.id);
             question.createdTimestamp = new Date();
+            question.totalReputation = 0;
+            question.currentUserVote = 0;
             return await this.questionRepository.save(question);
         } catch (e) {
             console.error(e);
