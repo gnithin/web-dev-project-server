@@ -12,6 +12,7 @@ import { validateOrReject } from 'class-validator';
 import ERROR_CODES from '../constants/errorCodes';
 import { UserAuthMiddleware } from '../common/auth/authMiddleware';
 import UserAuth from '../models/UserAuth';
+import { Utils } from '../common/utils';
 
 @Controller('api/questions')
 export class QuestionController {
@@ -38,6 +39,26 @@ export class QuestionController {
         } catch (e) {
             ResponseHandler.sendErrorJson(resp, e.message);
         }
+    }
+
+    @Get("search")
+    private async searchQuestion(req: Request, resp: Response) {
+       try {
+           let search = Utils.urlDecodeStr(req.query.search);
+           if(search === "") {
+               throw new Error("Search phrase cannot be empty!");
+           }
+
+           const questions: Question[] = await this.service.getQuestionByTitle(
+               search,
+               req.query.limit,
+               req.query.offset,
+           );
+           ResponseHandler.sendSuccessJson(resp, questions);
+
+       } catch (e) {
+           ResponseHandler.sendErrorJson(resp, e.message, 0, 400);
+       }
     }
 
     @Get(':questionId')

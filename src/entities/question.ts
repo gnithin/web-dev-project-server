@@ -22,7 +22,9 @@ export class Question {
     @OneToMany(type => Answer, answer => answer.question)
     answers: Answer[];
 
-    @ManyToOne(type => User, user => user.questions)
+    @ManyToOne(type => User, user => user.questions, {
+        onDelete: 'CASCADE'
+    })
     user: User;
 
     @OneToMany(type => QuestionReputationPoint, reputationPoint => reputationPoint.targetQuestion)

@@ -8,4 +8,11 @@ export class Utils {
         }
         return result;
     }
+
+    public static urlDecodeStr(s: any) {
+        if (typeof (s) !== 'string') {
+            return ""
+        }
+        return decodeURIComponent(s.trim());
+    }
 }

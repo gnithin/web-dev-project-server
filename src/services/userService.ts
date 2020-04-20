@@ -3,6 +3,7 @@ import { QuestionReputationPoint } from './../entities/questionReputationPoint';
 import { UserRepository } from '../repositories/userRepository';
 import { getConnection, getManager } from 'typeorm';
 import { User } from '../entities/user';
+import { CONTROLLER_CONSTANTS } from '../constants/controller';
 
 const crypto = require('crypto');
 
@@ -76,5 +77,42 @@ export class UserService {
             .getRawOne();
 
         return result.sum | 0;
+    }
+
+    public async setAdmin(userId:number) {
+        let userEntry = await this.userRepository.findOneOrFail(userId);
+        if(userEntry.isAdmin) {
+            // User is already an admin
+            return;
+        }
+        userEntry.isAdmin = true;
+        await this.userRepository.save(userEntry);
+    }
+
+    public async unsetAdmin(userId:number) {
+        let userEntry = await this.userRepository.findOneOrFail(userId);
+        if(!userEntry.isAdmin) {
+            // User is already an admin
+            return;
+        }
+        userEntry.isAdmin = false;
+        await this.userRepository.save(userEntry);
+    }
+
+    public async getAllUsers(
+        limit=CONTROLLER_CONSTANTS.DEFAULT_LIMIT,
+        offset=CONTROLLER_CONSTANTS.DEFAULT_OFFSET,
+    ){
+        return await this.userRepository.find({
+            skip: offset,
+            take: limit,
+            order: {
+                createdTimestamp: "DESC",
+            }
+        })
+    }
+
+    public async deleteUser(userId: number) {
+        return await this.userRepository.delete({id: userId});
     }
 }

@@ -18,8 +18,10 @@ export class Answer {
     })
     question: Question;
 
-    @ManyToOne(type => User, user => user.answers)
-    user: User
+    @ManyToOne(type => User, user => user.answers, {
+        onDelete: 'CASCADE'
+    })
+    user: User;
 
     @OneToMany(type => AnswerReputationPoint, reputationPoint => reputationPoint.targetAnswer)
     reputations: AnswerReputationPoint[]

@@ -3,7 +3,7 @@ import { QuestionReputationPoint } from './../entities/questionReputationPoint';
 import { User } from './../entities/user';
 import { AnswerRepository } from './../repositories/answerRepository';
 import { Question } from '../entities/question';
-import { getConnection, getManager } from 'typeorm';
+import { getConnection, getManager, Like } from 'typeorm';
 import { QuestionRepository } from '../repositories/questionRepository';
 import UserAuth from '../models/UserAuth';
 import { UserService } from './userService';
@@ -62,6 +62,33 @@ export class QuestionService {
             console.error(e);
             throw (e);
         }
+    }
+
+    public async getQuestionByTitle(
+        title: string,
+        limit=CONTROLLER_CONSTANTS.DEFAULT_LIMIT,
+        offset=CONTROLLER_CONSTANTS.DEFAULT_OFFSET,
+    ): Promise<Question[]> {
+        const questions = await this.questionRepository.find({
+            where: [
+                {title: Like(`%${title}%`)},
+                {description: Like(`%${title}%`)},
+            ],
+            relations: ['user'],
+            skip: offset,
+            take: limit,
+            order: {
+                createdTimestamp: "DESC",
+            }
+        });
+
+        for (const question of questions) {
+            question.totalReputation = await this.getQuestionReputation(question.id);
+            question.answersCount = await this.answerRepository.count({
+                where: { question: { id: question.id } }
+            });
+        }
+        return questions;
     }
 
     public async getAnswersForQuestion(
