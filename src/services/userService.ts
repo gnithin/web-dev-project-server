@@ -4,6 +4,7 @@ import { UserRepository } from '../repositories/userRepository';
 import { getConnection, getManager } from 'typeorm';
 import { User } from '../entities/user';
 import { CONTROLLER_CONSTANTS } from '../constants/controller';
+import EditUserRequest from '../models/editUserRequest';
 
 const crypto = require('crypto');
 
@@ -114,5 +115,15 @@ export class UserService {
 
     public async deleteUser(userId: number) {
         return await this.userRepository.delete({id: userId});
+    }
+
+    public async editUser(userId: number, editUser: EditUserRequest) : Promise<User> {
+        let userObj = await this.findUserForId(userId);
+
+        // Yes. I am explicitly doing this. Object.assign blows up types :(
+        userObj.email = editUser.email;
+        userObj.name = editUser.name;
+
+        return await this.userRepository.save(userObj);
     }
 }
