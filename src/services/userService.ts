@@ -111,4 +111,8 @@ export class UserService {
             }
         })
     }
+
+    public async deleteUser(userId: number) {
+        return await this.userRepository.delete({id: userId});
+    }
 }

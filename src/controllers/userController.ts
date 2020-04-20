@@ -1,4 +1,4 @@
-import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Get, Middleware, Post, Put } from '@overnightjs/core';
 import { Request, Response } from 'express';
 import { AdminUserAuthMiddleware, UserAuthMiddleware } from '../common/auth/authMiddleware';
 import authConstants from '../constants/auth';
@@ -242,6 +242,24 @@ export class UserController {
         try {
             const questionReputation = await this.userService.unsetAdmin(userId);
             ResponseHandler.sendSuccessJson(res, questionReputation);
+        } catch (e) {
+            ResponseHandler.sendErrorJson(res, e.message);
+        }
+    }
+
+    @Delete(':userId')
+    @Middleware(AdminUserAuthMiddleware)
+    private async deleteUser(req: Request, res: Response) {
+        let userId = parseInt(req.params.userId);
+
+        if (isNaN(userId)) {
+            ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        try {
+            await this.userService.deleteUser(userId);
+            ResponseHandler.sendSuccessJson(res, {});
         } catch (e) {
             ResponseHandler.sendErrorJson(res, e.message);
         }
