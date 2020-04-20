@@ -9,6 +9,6 @@ export class UserRequest {
     name: string;
 
     @IsNotEmpty()
-    @Length(5)
+    @Length(3)
     password: string;
 }
