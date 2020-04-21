@@ -14,6 +14,7 @@ import { UserLoginRequest } from '../models/userLoginRequest';
 import UserAuth from '../models/UserAuth';
 import { UserDetailsResponse } from '../models/userDetailsResponse';
 import { UserPublicDetailsResponse } from '../models/userPublicDetailsResponse';
+import EditUserRequest from '../models/editUserRequest';
 
 const bcrypt = require('bcrypt');
 
@@ -262,6 +263,52 @@ export class UserController {
             ResponseHandler.sendSuccessJson(res, {});
         } catch (e) {
             ResponseHandler.sendErrorJson(res, e.message);
+        }
+    }
+
+    @Put('edit/:userId')
+    @Middleware(UserAuthMiddleware)
+    private async editUser(req: Request, res: Response) {
+        let userId = parseInt(req.params.userId);
+
+        if (isNaN(userId)) {
+            ResponseHandler.sendErrorJson(res, 'Invalid request', ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        // Make sure that the user being edited is the same user as the one logged-in (or admin)
+        let loggedInUser = (req.user as UserAuth);
+        if (!loggedInUser.isAdmin && loggedInUser.id !== userId) {
+            ResponseHandler.sendErrorJson(res, 'user cannot be modified', ERROR_CODES.UNAUTHORIZED_ACCESS, 401);
+            return;
+        }
+
+        let editRequest = plainToClass(EditUserRequest, req.body);
+        let validateErr = await validate(editRequest);
+        if (validateErr && validateErr.length !== 0) {
+            ResponseHandler.sendErrorJson(res, JSON.stringify(validateErr), ERROR_CODES.BAD_REQUEST, 400);
+            return;
+        }
+
+        // Perform the edit operation from the edit user
+        try{
+            let newUser:User = await this.userService.editUser(userId, editRequest);
+            let userAuth = plainToClass(UserAuth, newUser);
+
+            // Perform re-login, since the user entries in req.user would've changed
+            req.login(userAuth, (err) => {
+                if (err) {
+                    console.log('Errr - ', err);
+                    ResponseHandler.sendErrorJson(res, err, ERROR_CODES.INTERNAL_ERR, 500);
+                    return;
+                }
+                return ResponseHandler.sendSuccessJson(res, userAuth);
+            });
+
+        } catch(e) {
+
+            ResponseHandler.sendErrorJson(res, JSON.stringify(validateErr));
+            return ;
         }
     }
 }
