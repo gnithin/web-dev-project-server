@@ -2,6 +2,8 @@
 
 [Live Site](https://web-dev-project-server.herokuapp.com/)
 
+This repo contains the source-code for the backend of the chowk app. Refer to [this link](https://github.com/gnithin/cs5610-final-project) for the front-end code.
+
 ## Pre-requisites
 - [npm](https://www.npmjs.com/get-npm)
 - [mysql db](https://www.mysql.com/downloads/)
