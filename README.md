@@ -1,5 +1,9 @@
 # web-dev-project-server
 
+[Live Site](https://web-dev-project-server.herokuapp.com/)
+
+This repo contains the source-code for the backend of the chowk app. Refer to [this link](https://github.com/gnithin/cs5610-final-project) for the front-end code.
+
 ## Pre-requisites
 - [npm](https://www.npmjs.com/get-npm)
 - [mysql db](https://www.mysql.com/downloads/)
@@ -10,7 +14,7 @@
   $ npm install
   ```
 - Lookup the `package.json` file for all the dependencies.
-- Add a `.env` or `.dev.env` file at the project root.
+- Add a `.dev.env`(when running in dev environment. `.env` will be required when running a production build) file at the project root.
 - It will have the following entries, depending on what is to be connected - 
   ```
   DB_TYPE=mysql
@@ -36,11 +40,16 @@
   ```
 - This should create a build directory, with the transpiled js files.
 
+## Deployment
+- Auto deployed on merging PRs into `develop` branch.
+
 ## API References -
 All the APIs are described [here](https://documenter.getpostman.com/view/6351305/SzS8s5P6?version=latest)
 
-## Resources - 
+## Resources, Heavily used frameworks - 
 - Writing Typescript with express -
     - https://typeorm.io/#/example-with-express
     - https://levelup.gitconnected.com/setup-express-with-typescript-in-3-easy-steps-484772062e01
-    - Not using any kind of builder since it seems to be too complex. Can probably decide on it later.
+- [TypeORM](https://github.com/typeorm/typeorm)
+- [Overnight-js](https://github.com/seanpmaxwell/overnight)
+- [Passport-js](https://github.com/jaredhanson/passport)
