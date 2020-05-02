@@ -59,3 +59,10 @@ All the APIs are described [here](https://documenter.getpostman.com/view/6351305
 - [TypeORM](https://github.com/typeorm/typeorm)
 - [Overnight-js](https://github.com/seanpmaxwell/overnight)
 - [Passport-js](https://github.com/jaredhanson/passport)
+
+
+## Project Team members 
+- Keshav Chandrashekar- [keshavchen](https://github.com/keshavchen)
+- Nithin Gangadharan - [gnithin](https://github.com/gnithin)
+- Tanmay Naik - [tsnaik](https://github.com/tsnaik)
+- Viral Patel - [patelviralb](https://github.com/patelviralb)
